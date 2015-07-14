@@ -1,0 +1,24 @@
+<div ng-controller="AppCtrl" ng-init="init()">
+    <a ui-sref="home.portal">戻る</a>
+    <div>
+        <h4>setting page</h4>
+        <div class="row">
+            <div class="col-md-2">
+                <ul class="nav nav-list well">
+                    <li>
+                        <a href="/createCustmer" class="">顧客データの生成</a>
+                    </li>
+                    <li>
+                        <a href="/createItem" class="">商品データの生成</a>
+                    </li>
+                    <li>
+                        <a href="/portalpdf" class="">PDFサンプル</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-10 clsHomde">
+                <div ui-view></div>
+            </div>
+        </div>
+    </div>
+</div>

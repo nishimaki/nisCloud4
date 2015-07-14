@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja" ng-app="myApp">
+  <head>
+    <title>nisCloud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/w2ui-1.4.3.min.css" />
+
+    <link rel="stylesheet" href="/css/app.css">
+    <style>
+    </style>
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+    
+    <script src="/js/lib/angular-ui-router.min.js"></script>
+    <script src="/js/lib/moment-with-locales.min.js"></script>
+    <script src="/js/lib/async.js"></script>
+    <script src="/js/lib/underscore-min.js"></script>
+
+    <script type="text/javascript" src="/js/lib/w2ui-1.4.3.min.js"></script>
+
+    <!--アプリケーションコントローラー-->
+    <script src="/js/app.js"></script>
+    <script src="/js/ctrlApp.js"></script>
+    <script src="/js/ctrlHeader.js"></script>
+    <script src="/js/ctrlLogin.js"></script>
+    <script src="/js/ctrlMessage.js"></script>
+    <script src="/js/ctrlPortal.js"></script>
+    <script src="/js/ctrlChat.js"></script>
+    <script src="/js/ctrlMtnCustmer.js"></script>
+    <script src="/js/ctrlMtnItem.js"></script>
+    <script src="/js/ctrlMitsumori.js"></script>
+    
+
+    <div class="contents-area">
+      <!--ページ定義-->
+      <section data-ng-include=" 'webclient/header.html' " id="header" class="top-header-9"></section>
+      <!--コンテンツ領域-->
+      <div class="contents">
+        <div ui-view></div>
+      </div>
+    </<div>
+  </body>
+</html>

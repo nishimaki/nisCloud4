@@ -1,0 +1,9 @@
+<div ng-controller="PortalCtrl" ng-init="init()">
+    <ul class="example-animate-container">
+        <li class="animate-repeat" ng-repeat="portal in portalList">
+            [{{$index + 1}}] {{portal.title}}
+        </li>
+    </ul>
+    <div id="example"></div>
+    <div id="myGrid" style="height: 450px"></div>
+</div>

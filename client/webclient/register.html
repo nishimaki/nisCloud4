@@ -1,0 +1,20 @@
+<div ng-controller="LoginCtrl" ng-init="init_register()">
+    <div class="login col-md-8">
+        <div class="card card-container">
+            <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+            <p id="profile-name" class="profile-name-card"></p>
+            <form class="form-signin  col-md-5" ng-submit="submit_register()">
+                <span id="reauth-email" class="reauth-email"></span>
+                <div class="form-group">
+                    <label for="name">メールアドレス</label>
+                    <input type="email" id="inputEmail" ng-model="inputEmail" class="form-control" placeholder="メールアドレス" required autofocus>
+                </div>
+                <div class="col-md-5">
+                    <button class="btn btn-primary btn-signin glyphicon glyphicon-log-in col-md-11" type="submit"> 送信</button>
+                </div>
+                <a href="#/login　" class="back-login">
+                ログイン画面に戻る
+            </form>
+        </div>
+    </div>
+</div>
