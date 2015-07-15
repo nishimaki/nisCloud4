@@ -43,43 +43,33 @@
 			        },
 					columns: [{
 							field: 'code',
-							caption: 'code',
+							caption: 'コード',
 							size: '50px',
 							sortable: true
 		                }, {
-							field: 'name_sei',
-							caption: '姓',
+							field: 'name',
+							caption: '氏名',
 							size: '100px',
 							sortable: true
 		                }, {
-							field: 'name_mei',
-							caption: '名',
-							size: '100px',
-							sortable: true
-		                }, {
-							field: 'kananame_sei',
-							caption: 'かな(姓)',
-							size: '120px',
-							sortable: true
-		                }, {
-							field: 'kananame_mei',
-							caption: 'かな(名)',
+							field: 'kananame',
+							caption: 'かな',
 							size: '120px',
 							sortable: true
 		                }, {
 							field: 'birthday',
 							caption: '誕生日',
-							size: '120px',
+							size: '80px',
 							sortable: true
 		                }, {
 							field: 'yuubin_no',
 							caption: '郵便番号',
-							size: '120px',
+							size: '70px',
 							sortable: true
 		                }, {
 							field: 'addr',
 							caption: '住所',
-							size: '120px',
+							size: '200px',
 							sortable: true
 	    	            }, ],
 					records: $scope.custmerList,
@@ -109,25 +99,23 @@
 		        url   : 'custmer',
 		        fields: [
 		            { field: 'code', type: 'text', required: true, html: { caption: 'コード', attr: 'style="" maxlength="5" size="5"' }},
-		            { field: 'name_sei',  type: 'text', required: true, html: { caption: '姓', attr: 'style="" size="20"' }},
-		            { field: 'name_mei',  type: 'text', required: true, html: { caption: '名', attr: 'style="" size="20"' }},
-		            { field: 'kananame_sei',  type: 'text', required: false, html: { caption: 'かな(姓)', attr: 'style="" size="20"' }},
-		            { field: 'kananame_mei',  type: 'text', required: false, html: { caption: 'かな(名)', attr: 'style="" size="20"' }},
+		            { field: 'name',  type: 'text', required: true, html: { caption: '氏名', attr: 'style="" size="30"' }},
+		            { field: 'kananame',  type: 'text', required: false, html: { caption: 'かな', attr: 'style="" size="30"' }},
 		            {
 		            	field: 'birthday',
 		            	type: 'date',
 		            	required: false,
 		            	options: {
-		            		format: 'yyyy/m/d',
+		            		format: 'yyyy/mm/dd',
 		            	},
 		            	html: {
 		            		caption: '誕生日',
-		            		attr: 'style="" size="20"'
+		            		attr: 'style="" size="10"'
 		            	}
 		            },
 		            { field: 'yuubin_no',  type: 'text', required: false, html: { caption: '郵便番号', attr: 'style="" maxlength="8" size="8"' }},
 		            { field: 'addr',  type: 'text', required: false, html: { caption: '住所', attr: 'style="" size="40"' }},
-		            { field: 'tel',  type: 'text', required: false, html: { caption: '電話番号', attr: 'style="" size="20"' } },
+		            { field: 'tel',  type: 'text', required: false, html: { caption: '電話番号', attr: 'style="" size="12"' } },
 		            { field: 'email',  type: 'email', required: false, html: { caption: 'EMAIL', attr: 'style="" size="40"' } },
 		        ],
 		        record: data,

@@ -58,6 +58,7 @@
 							sortable: true
 		                }, {
 							field: 'price',
+							type: 'int',
 							caption: '単価',
 							size: '80px',
 							sortable: true
@@ -101,7 +102,7 @@
 		            { field: 'code', type: 'text', required: true, html: { caption: 'コード', attr: 'style="" maxlength="8" size="8"' }},
 		            { field: 'name',  type: 'text', required: true, html: { caption: '商品名', attr: 'style="" size="50"' }},
 		            { field: 'spec',  type: 'text', required: true, html: { caption: '規格', attr: 'style="" size="30"' }},
-		            { field: 'price',  type: 'text', required: false, html: { caption: '単価', attr: 'style="" size="20"' }},
+		            { field: 'price',  type: 'int', required: false, html: { caption: '単価', attr: 'style="" size="20"' }},
 		            { field: 'maker',  type: 'text', required: false, html: { caption: 'メーカー名', attr: 'style="" size="50"' }},
 		            { field: 'salesDate',  type: 'text', required: false, html: { caption: '発売年月', attr: 'style="" size="10"' }},
 		        ],

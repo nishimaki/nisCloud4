@@ -37,7 +37,7 @@ appModule.chat.init(io);
 appModule.user.init(app);
 // メンテナンス初期処理
 appModule.mntcustmer.init(app);
-// appModule.mntitem.init(app);
+appModule.mntitem.init(app);
 // ポータル初期処理
 appModule.portal.init(app);
 // テストデータ
