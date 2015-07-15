@@ -34,12 +34,12 @@ var appModule = require('./server_modules');
 appModule.chat.init(io);
 
 // ユーザー初期処理
-// appModule.user.init(app);
+appModule.user.init(app);
 // メンテナンス初期処理
 appModule.mntcustmer.init(app);
-appModule.mntitem.init(app);
+// appModule.mntitem.init(app);
 // ポータル初期処理
-// appModule.portal.init(app);
+appModule.portal.init(app);
 // テストデータ
 // var res = util.testdata(app);
 

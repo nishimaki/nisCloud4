@@ -1,9 +1,10 @@
 // ---------------------------------
 // Portalモジュール
 // ---------------------------------
+module.exports.init = function(moduleApp) {
 
     // ポータルデータの取得
-    app.get('/portal', function(req, res) {
+    moduleApp.get('/portal', function(req, res) {
         console.log("portal get!!");
 
         var portalList = [{
@@ -18,7 +19,7 @@
     });
 
     // ポータルデータの取得
-    app.get('/portalpdf', function(req, res) {
+    moduleApp.get('/portalpdf', function(req, res) {
         var PDFDocument = require('pdfkit');
         var fs = require('fs');
 
@@ -79,17 +80,39 @@
 
     });
 
-    // mongo TEST
-    var model = require('./model/mongotest');
+    // // mongo TEST
+    // var model = require('./model/mongotest');
 
-    app.get('/mongo', function(req, res) {
-        var parent = new Parent({});
-        parent.save();
-        var child = new Child({parent:parent._id});
-        child.save(); //the parent children property will now contain child's id 
-        // var child2 = new Child({parent:parent._id});
-        // child2.save(); //the parent children property will now contain child's id 
-        child.remove();
+    // app.get('/mongo', function(req, res) {
+    //     var parent = new Parent({});
+    //     parent.save();
+    //     var child = new Child({parent:parent._id});
+    //     child.save(); //the parent children property will now contain child's id 
+    //     // var child2 = new Child({parent:parent._id});
+    //     // child2.save(); //the parent children property will now contain child's id 
+    //     child.remove();
 
-        res.send("OK");
+    //     res.send("OK");
+    // });
+
+    // sqlite3 TEST
+    moduleApp.get('/sqlite', function(req, res) {
+        
+        var sqlite3 = require('sqlite3').verbose();
+        var db = new sqlite3.Database('niscloud.db');
+        
+        db.run("INSERT INTO messages (content) VALUES (?)", "TEST MESSGAE", function(err, rows){
+          if (!err) {
+            db.all("SELECT content FROM messages", function(err, rows){
+              if (!err) {
+                res.send(rows);
+              } else {
+                res.send(err);
+              }   
+            }); 
+          } else {
+            res.send(err);
+          }  
+        });
     });
+};

@@ -3,23 +3,18 @@
 // ---------------------------------
 module.exports.init = function(moduleApp) {
 
-    var Custmer = require('./model/custmers').Custmer;
-
     // ---------------------------------
     // 顧客リストの取得
     // ---------------------------------
     moduleApp.get('/custmer', function(req, res) {
         console.log("顧客リストの取得 ");
 
-        Custmer.find({}, {}, {
-            sort: {
-                'code': 1
-            },
-            limit: 0
-        }, function(err, items) {
-            res.send(items);
+        var sqldb = new sqlite3.Database('niscloud.db');
+        sqldb.all("SELECT * FROM custmer", function(err, rows) {
+            if (!err) {
+                res.send(rows);
+            }
         });
-
     });
 
     // ---------------------------------
@@ -29,30 +24,53 @@ module.exports.init = function(moduleApp) {
         console.log("顧客リストの保存 ");
         console.dir(req.body);
         var data = req.body.record;
-        Custmer.findOne({_id:data._id},function(err,cust){
-            if(err || cust === null){
-                console.log("err ");
-                return;
-            }
-            cust.code = data.code;
-            cust.name_sei = data.name_sei;
-            cust.name_mei = data.name_mei;
-            cust.kananame_sei = data.kananame_sei;
-            cust.kananame_mei = data.kananame_mei;
-            cust.birthday = data.birthday;
-            cust.yuubin_no = data.yuubin_no;
-            cust.addr = data.addr;
-            cust.tel = data.tel;
-            cust.email = data.email;
-            
-            cust.save(function(err) {
-                if (err) {
-                    console.log("save error:" + err);
-                } else {
+
+        var sqldb = new sqlite3.Database('niscloud.db');
+        sqldb.all("SELECT count(*) as reccount FROM custmer WHERE code = ?", data.code, function(err, rows) {
+            console.dir(rows);
+            if (!err) {
+                if (rows.reccount == 0) {
+                    console.log("顧客INSERT");
+                    var stmt = sqldb.prepare("INSERT INTO custmer VALUES (?,?,?,?,?,?,?,?,?,?)");
+                    stmt.run(data.code,
+                        data.name_sei,
+                        data.name_mei,
+                        data.kananame_sei,
+                        data.kananame_mei,
+                        data.birthday,
+                        data.yuubin_no,
+                        data.addr,
+                        data.tel,
+                        data.email);
+                    stmt.finalize();
                     var status = "success";
                     res.send(status);
                 }
-            });
+                else {
+                    console.log("顧客UPDATE");
+                    var sql = "UPDATE custmer SET code = ?,name_sei = ?,name_mei = ?,kananame_sei = ?,kananame_mei = ?,birthday = ?,yuubin_no = ?,addr = ?,tel = ?,email = ? WHERE code = ?";
+                    var stmtUp = sqldb.prepare(sql);
+                    stmtUp.run(data.code,
+                        data.name_sei,
+                        data.name_mei,
+                        data.kananame_sei,
+                        data.kananame_mei,
+                        data.birthday,
+                        data.yuubin_no,
+                        data.addr,
+                        data.tel,
+                        data.email,
+                        data.code
+                    );
+                    stmtUp.finalize();
+                    var status = "success";
+                    res.send(status);
+                }
+            }
+            else {
+                var status = "error";
+                res.send(status);
+            }
         });
     });
 
@@ -61,28 +79,66 @@ module.exports.init = function(moduleApp) {
     // ---------------------------------
     moduleApp.get('/createCustmer', function(req, res) {
         console.log("createCustmer get!!");
-        var readCount = 0;
 
-        // collection削除
-        Custmer.remove({}, function(err, numberRemoved) {
-            console.log("inside remove call back" + numberRemoved);
+        var sqldb = new sqlite3.Database('niscloud.db');
+
+        sqldb.serialize(function() {
+
+            // テーブルを作成する。
+            // sqldb.run("DROP TABLE custmer");
+
+            // テーブルを作成する。
+            sqldb.run("CREATE TABLE custmer (code PRIMARY KEY, name_sei, name_mei, kananame_sei, kananame_mei, birthday, yuubin_no, addr, tel, email)");
+
+            var readCount = 0;
             // CSV読み込み
             var csv = require('ya-csv');
             var reader = csv.createCsvFileReader('./csv/custmer.csv');
             reader.setColumnNames(['code', 'name_sei', 'name_mei', 'kananame_sei', 'kananame_mei', 'birthday', 'yuubin_no', 'addr', 'tel', 'email']);
             reader.addListener('data', function(data) {
                 readCount++;
-                var newCustmer = new Custmer(data);
-                newCustmer.save(function(err) {
-                    if (err) {
-                        console.log("insert error:" + err);
-                    }
-                });
+
+                var stmt = sqldb.prepare("INSERT INTO custmer VALUES (?,?,?,?,?,?,?,?,?,?)");
+                stmt.run(data.code,
+                    data.name_sei,
+                    data.name_mei,
+                    data.kananame_sei,
+                    data.kananame_mei,
+                    data.birthday,
+                    data.yuubin_no,
+                    data.addr,
+                    data.tel,
+                    data.email);
+                stmt.finalize();
+
             }).on('end', function() {
-                res.redirect(302, "/");
-                // res.send("OK:" + readCount);
+                // res.redirect(302, "/");
+                res.send("OK:" + readCount);
             });
         });
+
+
+
+        // // collection削除
+        // Custmer.remove({}, function(err, numberRemoved) {
+        //     console.log("inside remove call back" + numberRemoved);
+        //     // CSV読み込み
+        //     var csv = require('ya-csv');
+        //     var reader = csv.createCsvFileReader('./csv/custmer.csv');
+        //     reader.setColumnNames(['code', 'name_sei', 'name_mei', 'kananame_sei', 'kananame_mei', 'birthday', 'yuubin_no', 'addr', 'tel', 'email']);
+        //     reader.addListener('data', function(data) {
+        //         readCount++;
+        //         var newCustmer = new Custmer(data);
+        //         newCustmer.save(function(err) {
+        //             if (err) {
+        //                 console.log("insert error:" + err);
+        //             }
+        //         });
+        //     }).on('end', function() {
+        //         res.redirect(302, "/");
+        //         // res.send("OK:" + readCount);
+        //     });
+        // });
 
     });
 };

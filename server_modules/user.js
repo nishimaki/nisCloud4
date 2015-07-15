@@ -1,11 +1,12 @@
 // ---------------------------------
 // Userモジュール
 // ---------------------------------
+module.exports.init = function(moduleApp) {
 
     // ---------------------------------
     // Login処理
     // ---------------------------------
-    app.post('/login', function(req, res) {
+    moduleApp.post('/login', function(req, res) {
         console.log("portal post:" + req.body.data.username + ':' + req.body.data.password);
 
         // ユーザー名とパスワードでログイン
@@ -29,7 +30,7 @@
     // ---------------------------------
     // Logout
     // ---------------------------------
-    app.get('/logout', function(req, res) {
+    moduleApp.get('/logout', function(req, res) {
         // セッションに登録
         req.session.user = null;
         // ログアウト完了
@@ -38,7 +39,7 @@
     // ---------------------------------
     // Loginチェック
     // ---------------------------------
-    app.get('/islogin', function(req, res) {
+    moduleApp.get('/islogin', function(req, res) {
         console.log("ログインチェック: " + req.session.user);
         if (req.session.user != undefined && req.session.user != '') {
             // ログイン済み
@@ -52,7 +53,7 @@
     // ---------------------------------
     // regist
     // ---------------------------------
-    app.post('/register', function(req, res) {
+    moduleApp.post('/register', function(req, res) {
         // メールアドレスを登録
         var email = req.body.data.email;
         
@@ -67,3 +68,4 @@
             }
         });
     });
+};
