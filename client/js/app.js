@@ -16,7 +16,7 @@
         $urlRouterProvider.otherwise("/blank");
         $stateProvider
             .state('home', {
-                isLoginRequired: true,
+                // isLoginRequired: true,
                 url: '/home',
                 templateUrl: 'webclient/home.html'
             })
@@ -26,22 +26,22 @@
                 templateUrl: 'webclient/blank.html'
             })
             .state('home.portal', {
-                isLoginRequired: true,
+                // isLoginRequired: true,
                 url: '/portal',
                 templateUrl: 'webclient/portal.html'
             })
             .state('home.mntcuts', {
-                isLoginRequired: true,
+                // isLoginRequired: true,
                 url: '/mnt/custmer',
                 templateUrl: 'webclient/mnt/custmer.html'
             })
             .state('home.mntitem', {
-                isLoginRequired: true,
+                // isLoginRequired: true,
                 url: '/mnt/item',
                 templateUrl: 'webclient/mnt/item.html'
             })
             .state('home.mnttool', {
-                isLoginRequired: true,
+                // isLoginRequired: true,
                 url: '/mnt/tool',
                 templateUrl: 'webclient/mnt/tool.html'
             })

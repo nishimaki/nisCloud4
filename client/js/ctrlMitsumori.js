@@ -56,7 +56,7 @@ app.controller('MitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'Sha
     $scope.init = function init() {
         console.log("MitSumoriCtrl init");
 
-        $http.get('/custmer').success(function(data) {
+        $http.get('/bizmitsumori').success(function(data) {
             var cnt = 0;
             _.each(data, function(dat) {
                 dat["recid"] = cnt++;
@@ -64,7 +64,7 @@ app.controller('MitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'Sha
             });
             // console.log("data length:" + data.length);
 
-            $scope.custmerList = data;
+            $scope.mitsumoriList = data;
 
             // ---------------------------------
             // グリッド表示
@@ -75,35 +75,103 @@ app.controller('MitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'Sha
                 show: {
                     toolbar: true,
                     footer: true,
+		            toolbarAdd: true,
+		            toolbarDelete: true,
+                },
+                toolbar: {
+                    items: [
+                        { type: 'break' },
+                        { type: 'button', id: 'mybutton', caption: 'ボタン', img: 'icon-folder' }
+                    ],
+                    onClick: function (target, data) {
+                        console.log(target);
+                    }
                 },
                 columns: [{
-                        field: 'code',
-                        caption: 'code',
-                        size: '80px',
+                        field: 'custmer_code',
+                        caption: 'コード',
+                        size: '60px',
                         sortable: true
                     }, {
-                        field: 'name_sei',
-                        caption: '姓',
-                        size: '50px',
+                        field: 'name',
+                        caption: '氏名',
+                        size: '120px',
                         sortable: true
                     }, {
-                        field: 'name_mei',
-                        caption: '名',
-                        size: '50px',
+                        field: 'title',
+                        caption: '見積名',
+                        size: '200px',
+                        sortable: true
+                    }, {
+                        field: 'mitsumori_date',
+                        caption: '見積日',
+                        size: '100px',
                         sortable: true
                     },
                 ],
-                records: $scope.custmerList,
+                records: $scope.mitsumoriList,
                 // ---------------------------------
                 // 行クリック
                 // ---------------------------------
                 onClick: function(event) {
                     // console.log(event);
-                    MakeForm(event, $scope.itemList[event.recid]);
+                    MakeForm(event, $scope.mitsumoriList[event.recid]);
                 }
             });
 
         });
+
+		// ---------------------------------
+		// フォーム表示
+		// ---------------------------------
+		function MakeForm(event, data) {
+			// console.log(event);
+			// console.log(data);
+	
+			$("#myGrid2").w2destroy("myGrid2");
+			$('#myGrid2').w2form({ 
+		        name  : 'myGrid2',
+		        url   : 'mitsumori',
+		        fields: [
+		            { field: 'custmer_code', type: 'text', required: true, html: { caption: 'コード', attr: 'style="" maxlength="5" size="5"' }},
+		            { field: 'name',  type: 'text', required: true, html: { caption: '氏名', attr: 'style="" size="30"' }},
+		            { field: 'title',  type: 'text', required: false, html: { caption: 'かな', attr: 'style="" size="30"' }},
+		            {
+		            	field: 'mitsumori_date',
+		            	type: 'date',
+		            	required: false,
+		            	options: {
+		            		format: 'yyyy/mm/dd',
+		            	},
+		            	html: {
+		            		caption: '見積日',
+		            		attr: 'style="" size="10"'
+		            	}
+		            },
+		        ],
+		        record: data,
+		        actions: {
+		            reset: function () {
+		                this.clear();
+		            },
+		            save: function () {
+		                this.save(data, function (){
+		                	console.log("save");
+		                });
+		            }
+		        }
+		    });
+		    
+			w2ui['myForm'].on('change', function (target, eventData) {
+			    console.log(target);
+			    console.log(eventData);
+			});		
+			w2ui['myForm'].on('load', function (target, eventData) {
+			    console.log(target);
+			    console.log(eventData);
+			});		
+			
+		}
     };
 
 }]);

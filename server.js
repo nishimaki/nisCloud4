@@ -35,6 +35,8 @@ appModule.chat.init(io);
 
 // ユーザー初期処理
 appModule.user.init(app);
+// 業務処理
+appModule.bizmitsumori.init(app);
 // メンテナンス初期処理
 appModule.mntcustmer.init(app);
 appModule.mntitem.init(app);

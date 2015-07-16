@@ -17,6 +17,7 @@ module.exports = {
     user: require('./user'),
     chat: require('./chat'),
     portal: require('./portal'),
+    bizmitsumori: require('./bizMitsumori'),
     mntcustmer: require('./mntCustmer'),
     mntitem: require('./mntItem'),
 };

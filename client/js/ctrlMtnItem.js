@@ -111,8 +111,8 @@
 		            reset: function () {
 		                this.clear();
 		            },
-		            save: function () {
-		                this.save(data, function (){
+		            save: function (target, data) {
+		                this.save(data, function (event){
 		                	console.log("save");
 		                });
 		            }
@@ -120,12 +120,14 @@
 		    });
 		    
 			w2ui['myForm'].on('change', function (target, eventData) {
-			    console.log(target);
-			    console.log(eventData);
+			    console.log('change');
+			    // console.log(target);
+			    // console.log(eventData);
 			});		
 			w2ui['myForm'].on('load', function (target, eventData) {
-			    console.log(target);
-			    console.log(eventData);
+			    console.log('load');
+			    // console.log(target);
+			    // console.log(eventData);
 			});		
 			
 		}
