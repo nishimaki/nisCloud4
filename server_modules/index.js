@@ -4,6 +4,7 @@ ncmb = require('./ncmb');
 // util = require('./util');
 PDFDocument = require('pdfkit'); 
 sqlite3 = require('sqlite3').verbose();
+moment =  require('moment');
 
 /***
 mongoose = require('mongoose');

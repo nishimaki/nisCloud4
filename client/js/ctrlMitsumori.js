@@ -76,7 +76,6 @@ app.controller('MitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'Sha
                     toolbar: true,
                     footer: true,
 		            toolbarAdd: true,
-		            toolbarDelete: true,
                 },
                 toolbar: {
                     items: [
@@ -107,6 +106,11 @@ app.controller('MitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'Sha
                         caption: '見積日',
                         size: '100px',
                         sortable: true
+                    }, {
+                        field: 'status',
+                        caption: '状態',
+                        size: '100px',
+                        sortable: true
                     },
                 ],
                 records: $scope.mitsumoriList,
@@ -116,10 +120,55 @@ app.controller('MitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'Sha
                 onClick: function(event) {
                     // console.log(event);
                     MakeForm(event, $scope.mitsumoriList[event.recid]);
+                    MakeMeisaiGrid(event, $scope.mitsumoriList[event.recid]);
                 }
             });
 
         });
+
+		// ---------------------------------
+		// 明細グリッド表示
+		// ---------------------------------
+		function MakeMeisaiGrid(event, data) {
+		    
+            $("#myGrid3").w2destroy("myGrid3");
+            $('#myGrid3').w2grid({
+                name: 'myGrid3',
+                show: {
+                    toolbar: true,
+                    footer: true,
+		            toolbarAdd: true,
+                },
+                toolbar: {
+                    items: [
+                        { type: 'break' },
+                        { type: 'button', id: 'mybutton', caption: 'ボタン', img: 'icon-folder' }
+                    ],
+                    onClick: function (target, data) {
+                        console.log(target);
+                    }
+                },
+                columns: [{
+                        field: 'mei_title',
+                        caption: 'タイトル',
+                        size: '60px',
+                        sortable: true
+                    }, {
+                        field: 'mei_bikou',
+                        caption: '備考',
+                        size: '200px',
+                        sortable: true
+                    },
+                ],
+                // records: $scope.mitsumoriList,
+                // ---------------------------------
+                // 行クリック
+                // ---------------------------------
+                onClick: function(event) {
+                    console.log(event);
+                }
+            });
+		}
 
 		// ---------------------------------
 		// フォーム表示
@@ -148,6 +197,7 @@ app.controller('MitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'Sha
 		            		attr: 'style="" size="10"'
 		            	}
 		            },
+		            { field: 'status',  type: 'text', required: false, html: { caption: '状態', attr: 'style="" size="10"' }},
 		        ],
 		        record: data,
 		        actions: {

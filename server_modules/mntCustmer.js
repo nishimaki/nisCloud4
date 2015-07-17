@@ -105,7 +105,7 @@ module.exports.init = function(moduleApp) {
                     data.addr,
                     data.tel,
                     data.email);
-                stmt.finalize();
+                // stmt.finalize();
 
             }).on('end', function() {
                 res.redirect(302, "/");

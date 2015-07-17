@@ -125,7 +125,7 @@ module.exports.init = function(moduleApp) {
                     data.price.replace(/,/g,""),
                     data.maker,
                     data.salesDate);
-                stmt.finalize();
+                // stmt.finalize();
 
             }).on('end', function() {
                 res.redirect(302, "/");
