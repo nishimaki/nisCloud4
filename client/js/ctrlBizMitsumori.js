@@ -84,8 +84,8 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                 }
             },
             searches : [
-                    { field: 'custmer_code', caption: 'コード', type: 'text' },
-                    { field: 'name', caption: '氏名', type: 'text' },
+                    { field: 'custmer_code', caption: '顧客コード', type: 'text' },
+                    { field: 'name', caption: '顧客名', type: 'text' },
                     { field: 'title', caption: '見積名', type: 'text' },
                 ],
 			sortData: [
@@ -143,7 +143,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                 $(".clsMitsumoriDetail").show();
                 MakeForm(event, "");
                 MakeMeisaiGrid(event, "");
-			}
+			},
         });
 
 
@@ -207,9 +207,9 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
 		        url   : '/bizmitsumori',
 		        recid : recid,
 		        fields: [
-		            { field: 'custmer_code', type: 'text', required: true, html: { caption: 'コード', attr: 'style="" maxlength="5" size="5"' }},
-		            { field: 'name',  type: 'text', required: false, html: { caption: '氏名', attr: 'style="" size="30"' }},
-		            { field: 'title',  type: 'text', required: false, html: { caption: 'かな', attr: 'style="" size="30"' }},
+		            { field: 'custmer_code', type: 'text', required: true, html: { caption: '顧客コード', attr: 'style="" maxlength="5" size="5"' }},
+		            { field: 'name',  type: 'text', required: false, html: { caption: '顧客名', attr: 'style="" size="30"' }},
+		            { field: 'title',  type: 'text', required: false, html: { caption: '見積名', attr: 'style="" size="30"' }},
 		            {
 		            	field: 'mitsumori_date',
 		            	type: 'date',

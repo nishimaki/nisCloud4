@@ -21,7 +21,7 @@ module.exports.init = function(moduleApp) {
             // WHERE句
             var where = util.makeSqlWhere(" ", req.body);
             if (recid != undefined && recid != "") {
-                where += " and mitsu_id = '" + recid + "' ";
+                where += " AND mitsu_id = '" + recid + "' ";
             }
             
             // ORDER句
@@ -39,7 +39,7 @@ module.exports.init = function(moduleApp) {
                         + " LEFT OUTER JOIN"
                         + " m_custmer CS"
                         + " ON MT.custmer_code = CS.code"
-                        + where
+                        + " WHERE 1 = 1" + where
                         + order;
             console.log("sql:" + sql);
             sqldb.all(sql, function(err, rows) {
@@ -69,8 +69,10 @@ module.exports.init = function(moduleApp) {
                 if (!err) {
                     if (rows[0].reccount == 0) {
                         console.log("見積INSERT");
-                        var stmt = sqldb.prepare("INSERT INTO d_mitsumori (custmer_code, title, mitsumori_date, status, cre_date, upd_date) VALUES (?,?,?,?,?,?)");
+                        var uuid = require('node-uuid');
+                        var stmt = sqldb.prepare("INSERT INTO d_mitsumori (mitsu_id, custmer_code, title, mitsumori_date, status, cre_date, upd_date) VALUES (?,?,?,?,?,?,?)");
                         stmt.run(
+                            uuid.v1(),
                             data.custmer_code,
                             data.title,
                             data.mitsumori_date,

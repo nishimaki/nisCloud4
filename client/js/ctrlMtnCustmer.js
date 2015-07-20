@@ -70,6 +70,13 @@
 				// ---------------------------------
 				onAdd: function(event) {
 					MakeForm(event, "");
+				},
+				// ---------------------------------
+				// 削除ボタンクリック後
+				// ---------------------------------
+				onDeleted: function(event) {
+					console.log(event);
+					$("#myForm").w2destroy("myForm");
 				}
 			});
 		};
