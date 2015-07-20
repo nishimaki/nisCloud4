@@ -6,92 +6,111 @@ module.exports.init = function(moduleApp) {
     // ---------------------------------
     // 商品リストの取得
     // ---------------------------------
-    moduleApp.get('/item', function(req, res) {
-        console.log("商品リストの取得 ");
-
-        var sqldb = new sqlite3.Database('niscloud.db');
-        sqldb.all("SELECT * FROM m_item ORDER BY code", function(err, rows) {
-            if (!err) {
-                console.log("商品リストの取得:" + rows.length);
-                res.send(rows);
-            }
-        });
-    });
-
-    // ---------------------------------
-    // 商品リストの保存
-    // ---------------------------------
     moduleApp.post('/item', function(req, res) {
-        console.log("商品リストの保存 ");
+        console.log("商品リストの取得 ");
         console.dir(req.body);
-        var oldKey = req.body.code;
-        var data = req.body.record;
-        
+        var cmd = req.body.cmd;
+        var recid = req.body.recid;
+        console.log("recid:" + recid);
         var sqldb = new sqlite3.Database('niscloud.db');
-        sqldb.all("SELECT count(*) as reccount FROM m_item WHERE code = ?", oldKey, function(err, rows) {
-            console.dir(rows);
-            if (!err) {
-                if (rows.reccount == 0) {
-                    console.log("商品INSERT");
-                    var stmt = sqldb.prepare("INSERT INTO m_item VALUES (?,?,?,?,?,?)");
-                    stmt.run(data.code,
-                        data.name,
-                        data.spec,
-                        data.price.replace(/,/g,""),
-                        data.maker,
-                        data.salesDate
-                    );
-                    stmt.finalize();
-                    var status = "success";
-                    res.send(status);
-                }
-                else {
-                    console.log("商品UPDATE");
-                    var sql = "UPDATE m_item SET code = ?,name = ?,spec = ?,price = ?,maker = ?,salesDate = ? WHERE code = ?";
-                    var stmtUp = sqldb.prepare(sql);
-                    stmtUp.run(
-                        data.code,
-                        data.name,
-                        data.spec,
-                        data.price.replace(/,/g,""),
-                        data.maker,
-                        data.salesDate,
-                        oldKey
-                    );
-                    stmtUp.finalize();
-                    var status = "success";
-                    res.send(status);
-                }
+        // ---------------------------------
+        // データ取得
+        // ---------------------------------
+        if (cmd == 'get-records' || cmd == 'get-record') {
+            // WHERE句
+            var where = util.makeSqlWhere(" ", req.body);
+            if (recid != undefined && recid != "") {
+                where += " and code = '" + recid + "' ";
             }
-            else {
-                var status = "error";
-                res.send(status);
-            }
-        });
-        
-        
-        
-        // Item.findOne({_id:data._id},function(err,itemdata){
-        //     if(err || itemdata === null){
-        //         console.log("err ");
-        //         return;
-        //     }
-        //     itemdata.code = data.code;
-        //     itemdata.name = data.name;
-        //     itemdata.spec = data.spec;
-        //     itemdata.price = data.price;
-        //     itemdata.maker = data.maker;
-        //     itemdata.salesDate = data.salesDate;
+            // ORDER句
+            var order = util.makeSqlOrder(req.body);
 
-        //     itemdata.save(function(err) {
-        //         if (err) {
-        //             console.log("save error:" + err);
-        //         } else {
-        //             var status = "success";
-        //             res.send(status);
-        //         }
-        //     });
-        // });
+            var sql = "SELECT"
+                        + " code as recid"
+                        + " , * "
+                        + " FROM m_item"
+                        + " WHERE 1 = 1 "
+                        + where
+                        + order;
+            console.log("sql:" + sql);
+            sqldb.all(sql, function(err, rows) {
+                if (!err) {
+                    console.log("商品リストの取得:" + rows.length);
+    				var result = {};
+    				result["status"] = "success";
+    				result["total"] = rows.length;
+                    if (cmd == 'get-records') {
+    				    result["records"] = rows;
+                    } else {
+        				result["record"] = rows[0];
+                    }
+                    res.send(result);
+                }
+            });
+        }
+        // ---------------------------------
+        // データ保存
+        // ---------------------------------
+        if (cmd == 'save-record') {
+            console.log("商品リストの保存 ");
+            var sqldb = new sqlite3.Database('niscloud.db');
+            sqldb.all("SELECT count(*) as reccount FROM m_item WHERE code = ?", recid, function(err, rows) {
+                var data = req.body.record;
+            	var tm = moment().toISOString();
+                if (!err) {
+                    if (rows[0].reccount == 0) {
+                        console.log("商品INSERT");
+                        var stmt = sqldb.prepare("INSERT INTO m_item (code, name, spec, price, maker, salesDate, cre_date, upd_date ) VALUES (?,?,?,?,?,?,?,?)");
+                        stmt.run(
+                            data.code,
+                            data.name,
+                            data.spec,
+                            data.price.replace(/,/g,""),
+                            data.maker,
+                            data.salesDate,
+                            tm,
+                            tm
+                        );
+        				var insresult = {};
+        				insresult["status"] = "success";
+                        res.send(insresult);
+                    }
+                    else {
+                        console.log("商品UPDATE");
+                        var sql = "UPDATE m_item SET code = ?,name = ?,spec = ?,price = ?,maker = ?,salesDate = ?, upd_date = ? WHERE code = ?";
+                        var stmtUp = sqldb.prepare(sql);
+                        stmtUp.run(
+                            data.code,
+                            data.name,
+                            data.spec,
+                            data.price.replace(/,/g,""),
+                            data.maker,
+                            data.salesDate,
+                            tm,
+                            recid
+                        );
+        				var updresult = {};
+        				updresult["status"] = "success";
+                        res.send(updresult);
+                    }
+                }
+            });
+        }
+        // ---------------------------------
+        // データ削除
+        // ---------------------------------
+        if (cmd == 'delete-records') {
+            console.log("商品UPDATE");
+            var sql = "DELETE FROM m_item WHERE code = ?";
+            var selected = req.body.selected;
+            var stmtUp = sqldb.prepare(sql);
+            stmtUp.run(
+                selected[0]
+            );
+			var delresult = {};
+			delresult["status"] = "success";
+            res.send(delresult);
+        }
     });
 
     // ---------------------------------
@@ -108,7 +127,7 @@ module.exports.init = function(moduleApp) {
             sqldb.run("DROP TABLE IF EXISTS m_item");
 
             // テーブルを作成する。
-            sqldb.run("CREATE TABLE m_item (code PRIMARY KEY, name, spec, price INTEGER, maker, salesDate)");
+            sqldb.run("CREATE TABLE m_item (code PRIMARY KEY, name, spec, price INTEGER, maker, salesDate, cre_date DATETIME, upd_date DATETIME)");
 
             var readCount = 0;
             // CSV読み込み
@@ -117,44 +136,23 @@ module.exports.init = function(moduleApp) {
             reader.setColumnNames(['code', 'name', 'spec', 'price', 'maker', 'salesDate']);
             reader.addListener('data', function(data) {
                 readCount++;
-
-                var stmt = sqldb.prepare("INSERT INTO m_item VALUES (?,?,?,?,?,?)");
-                stmt.run(data.code,
+            	var tm = moment().toISOString();
+                var stmt = sqldb.prepare("INSERT INTO m_item (code, name, spec, price, maker, salesDate, cre_date, upd_date ) VALUES (?,?,?,?,?,?,?,?)");
+                stmt.run(
+                    data.code,
                     data.name,
                     data.spec,
                     data.price.replace(/,/g,""),
                     data.maker,
-                    data.salesDate);
-                // stmt.finalize();
+                    data.salesDate,
+                    tm,
+                    tm
+                );
 
             }).on('end', function() {
                 res.redirect(302, "/");
                 // res.send("OK:" + readCount);
             });
         });
-        
-        // var readCount = 0;
-
-        // // collection削除
-        // Item.remove({}, function(err, numberRemoved) {
-        //     console.log("inside remove call back" + numberRemoved);
-        //     // CSV読み込み
-        //     var csv = require('ya-csv');
-        //     var reader = csv.createCsvFileReader('./csv/item.csv');
-        //     reader.setColumnNames(['code', 'name', 'spec', 'price', 'maker', 'salesDate']);
-        //     reader.addListener('data', function(data) {
-        //         readCount++;
-        //         var newItem = new Item(data);
-        //         newItem.save(function(err) {
-        //             if (err) {
-        //                 console.log("insert error:" + err);
-        //             }
-        //         });
-        //     }).on('end', function() {
-        //         res.redirect(302, "/");
-        //         // res.send("OK:" + readCount);
-        //     });
-        // });
-
     });
 };

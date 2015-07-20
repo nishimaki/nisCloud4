@@ -152,3 +152,30 @@
     // moment設定
     // ---------------------------------
     moment.locale('ja');
+
+    // ---------------------------------
+    // w2ui設定
+    // ---------------------------------
+    w2utils.locale('/json_path/locale/ja-jp.json');
+
+    // ---------------------------------
+    // フォームからグリッド行への更新
+    // ---------------------------------
+    function form2grid(recid, fromName, gridName) {
+        // formの内容
+        var rec_form = w2ui[fromName].record;
+        console.log(rec_form);
+        var obj_form = Object.getOwnPropertyNames(rec_form)
+        console.log(obj_form);
+        var data_grid = w2ui[gridName].get(recid);
+        if (data_grid != undefined && data_grid != null) {
+            _.each(obj_form, function(prop) {
+                if (data_grid.hasOwnProperty(prop)) {
+                    data_grid[prop] = rec_form[prop];
+                }
+            });
+            w2ui[gridName].refreshRow(recid);
+        } else {
+            w2ui[gridName].reload();
+        }
+    }

@@ -1,7 +1,7 @@
 // Global
 __ = require('underscore');
 ncmb = require('./ncmb');
-// util = require('./util');
+util = require('./util');
 PDFDocument = require('pdfkit'); 
 sqlite3 = require('sqlite3').verbose();
 moment =  require('moment');
@@ -22,3 +22,5 @@ module.exports = {
     mntcustmer: require('./mntCustmer'),
     mntitem: require('./mntItem'),
 };
+
+    
