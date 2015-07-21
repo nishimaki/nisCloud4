@@ -26,8 +26,8 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                 hint: 'Hint for item 2'
             }, {
                 type: 'button',
-                id: 'item3',
-                caption: 'Item 3',
+                id: 'showMeisaiForm',
+                caption: '見積入力',
                 icon: 'fa-star-empty',
                 hint: 'Hint for item 3'
             }, {
@@ -51,8 +51,16 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
             }
             if (event.target == "showIchiran") {
                 w2ui['toolbar'].disable('showIchiran');
+                w2ui['toolbar'].disable('showMeisaiForm');
                 $(".clsMitsumoriIchiran").show();
                 $(".clsMitsumoriDetail").hide();
+                $(".clsMitsumoriForm").show();
+                $(".clsMitsumoriMeisaiForm").hide();
+            }
+            if (event.target == "showMeisaiForm") {
+                w2ui['toolbar'].disable('showMeisaiForm');
+                $(".clsMitsumoriForm").show();
+                $(".clsMitsumoriMeisaiForm").hide();
             }
         }
     });
@@ -60,6 +68,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
     $scope.init = function init() {
         console.log("BizMitSumoriCtrl init");
         w2ui['toolbar'].disable('showIchiran');
+        w2ui['toolbar'].disable('showMeisaiForm');
 
         // ---------------------------------
         // グリッド表示
@@ -87,6 +96,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                     { field: 'custmer_code', caption: '顧客コード', type: 'text' },
                     { field: 'name', caption: '顧客名', type: 'text' },
                     { field: 'title', caption: '見積名', type: 'text' },
+                    { field: 'status', caption: '状態', type: 'text' },
                 ],
 			sortData: [
 				{ field: 'mitsu_id', direction: 'asc' },
@@ -128,11 +138,14 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
             // 行クリック
             // ---------------------------------
             onClick: function(event) {
+                var record = w2ui['myMainGrid'].get(event.recid);
+                
                 w2ui['toolbar'].enable('showIchiran');
                 $(".clsMitsumoriIchiran").hide();
                 $(".clsMitsumoriDetail").show();
                 MakeForm(event, event.recid);
-                MakeMeisaiGrid(event, event.recid);
+                MakeMeisaiGrid(event, event.recid, record.mitsu_id, "M");
+                console.log(event);
             },
 			// ---------------------------------
 			// 追加ボタンクリック
@@ -142,59 +155,9 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                 $(".clsMitsumoriIchiran").hide();
                 $(".clsMitsumoriDetail").show();
                 MakeForm(event, "");
-                MakeMeisaiGrid(event, "");
+                MakeMeisaiGrid(event, "DUMMY", record.mitsu_id);
 			},
         });
-
-
-		// ---------------------------------
-		// 明細グリッド表示
-		// ---------------------------------
-		function MakeMeisaiGrid(event, recid) {
-		    
-            $("#myMeisaiGrid").w2destroy("myMeisaiGrid");
-            $('#myMeisaiGrid').w2grid({
-                name: 'myMeisaiGrid',
-                url: '/bizmitsumorimei',
-                show: {
-                    toolbar: true,
-                    footer: true,
-		            toolbarAdd: true,
-                    selectColumn: true,
-                    expandColumn: true
-                },
-                toolbar: {
-                    items: [
-                        { type: 'break' },
-                        { type: 'button', id: 'mybutton', caption: 'ボタン', img: 'icon-folder' }
-                    ],
-                    onClick: function (target, data) {
-                        console.log(target);
-                    }
-                },
-                columns: [{
-                        field: 'mei_title',
-                        caption: 'タイトル',
-                        size: '200px',
-                        sortable: true
-                    }, {
-                        field: 'mei_bikou',
-                        caption: '備考',
-                        size: '200px',
-                        sortable: true
-                    },
-                ],
-                postData: {
-                    parent_id: recid,
-                },
-                // ---------------------------------
-                // 行クリック
-                // ---------------------------------
-                onClick: function(event) {
-                    console.log(event);
-                }
-            });
-		}
 
 		// ---------------------------------
 		// フォーム表示
@@ -247,6 +210,111 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
 // 			});		
 			
 		}
+		// ---------------------------------
+		// 明細グリッド表示
+		// ---------------------------------
+		function MakeMeisaiGrid(event, recid, parent_id, parent_type) {
+		    
+            $("#myMeisaiGrid").w2destroy("myMeisaiGrid");
+            $('#myMeisaiGrid').w2grid({
+                name: 'myMeisaiGrid',
+                url: '/bizmitsumorimei',
+                show: {
+                    toolbar: true,
+                    footer: true,
+		            toolbarAdd: true,
+                    selectColumn: false,
+                },
+                toolbar: {
+                    items: [
+                        { type: 'break' },
+                        { type: 'button', id: 'mybutton', caption: 'ボタン', img: 'icon-folder' }
+                    ],
+                    onClick: function (target, data) {
+                        console.log(target);
+                    }
+                },
+                columns: [{
+                        field: 'mei_title',
+                        caption: 'タイトル',
+                        size: '200px',
+                        sortable: true
+                    }, {
+                        field: 'mei_bikou',
+                        caption: '備考',
+                        size: '200px',
+                        sortable: true
+                    },
+                ],
+                postData: {
+                    parent_id: parent_id,
+                    parent_type: parent_type,
+                },
+                // ---------------------------------
+                // 行クリック
+                // ---------------------------------
+                onClick: function(event) {
+                    w2ui['toolbar'].enable('showMeisaiForm');
+                    w2ui['toolbar'].disable('showMitsumoriMeisaiForm');
+                    $(".clsMitsumoriForm").hide();
+                    $(".clsMitsumoriMeisaiForm").show();
+                    MakeMeisaiForm(event, event.recid, parent_id, parent_type);
+                },
+    			// ---------------------------------
+    			// 追加ボタンクリック
+    			// ---------------------------------
+    			onAdd: function(event) {
+                    console.log("追加ボタンクリック");
+                    w2ui['toolbar'].enable('showMeisaiForm');
+                    w2ui['toolbar'].disable('showMitsumoriMeisaiForm');
+                    $(".clsMitsumoriForm").hide();
+                    $(".clsMitsumoriMeisaiForm").show();
+                    MakeMeisaiForm(event, "", parent_id, parent_type);
+    			},
+            });
+		}
+		// ---------------------------------
+		// 明細フォーム表示
+		// ---------------------------------
+		function MakeMeisaiForm(event, recid, parent_id, parent_type) {
+
+			$("#myMitsumoriMeisaiForm").w2destroy("myMitsumoriMeisaiForm");
+			$('#myMitsumoriMeisaiForm').w2form({ 
+		        name  : 'myMitsumoriMeisaiForm',
+		        url   : '/bizmitsumorimei',
+		        recid : recid,
+		        fields: [
+		            { field: 'mei_title', type: 'text', required: true, html: { caption: '名称', attr: 'style="" size="30"' }},
+		            { field: 'mei_bikou',  type: 'text', required: false, html: { caption: '備考', attr: 'style="" size="30"' }},
+		        ],
+                postData: {
+                    parent_id: parent_id,
+                    parent_type: parent_type,
+                },
+		        actions: {
+		            reset: function () {
+		                this.clear();
+		            },
+		            save: function (target, data) {
+		                this.save(function (event) {
+		                	console.log("save");
+							form2grid(recid, 'myMitsumoriMeisaiForm', 'myMeisaiGrid');
+		                });
+		            }
+		        }
+		    });
+
+// 			w2ui['myForm'].on('change', function (target, eventData) {
+// 			    console.log(target);
+// 			    console.log(eventData);
+// 			});		
+// 			w2ui['myForm'].on('load', function (target, eventData) {
+// 			    console.log(target);
+// 			    console.log(eventData);
+// 			});		
+			
+		}
+		
     };
 
 }]);

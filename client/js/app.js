@@ -165,7 +165,7 @@
         // formの内容
         var rec_form = w2ui[fromName].record;
         console.log(rec_form);
-        var obj_form = Object.getOwnPropertyNames(rec_form)
+        var obj_form = Object.getOwnPropertyNames(rec_form);
         console.log(obj_form);
         var data_grid = w2ui[gridName].get(recid);
         if (data_grid != undefined && data_grid != null) {

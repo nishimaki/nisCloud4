@@ -105,57 +105,57 @@ module.exports.init = function(moduleApp) {
         }
     });
 
-    // ---------------------------------
-    // 見積の保存
-    // ---------------------------------
-    moduleApp.post('/mitsumori', function(req, res) {
-        console.log("見積の保存 ");
-        console.dir(req.body);
-        var oldKey = req.body.mitsu_id;
-        var data = req.body.record;
+    // // ---------------------------------
+    // // 見積の保存
+    // // ---------------------------------
+    // moduleApp.post('/mitsumori', function(req, res) {
+    //     console.log("見積の保存 ");
+    //     console.dir(req.body);
+    //     var oldKey = req.body.mitsu_id;
+    //     var data = req.body.record;
         
-        var sqldb = new sqlite3.Database('niscloud.db');
-        sqldb.all("SELECT count(*) as reccount FROM d_mitsumori WHERE mitsu_id = ?", oldKey, function(err, rows) {
-            console.dir(rows);
-        // 	var tm = moment().format('YYYY/MM/DD HH:mm:ss.SSS');
-        	var tm = moment().toISOString();
-            if (!err) {
-                if (rows.reccount == 0) {
-                    console.log("見積INSERT");
-                    var stmt = sqldb.prepare("INSERT INTO d_mitsumori (custmer_code, title, mitsumori_date, cre_date, upd_date) VALUES (?,?,?,?,?)");
-                    stmt.run(
-                        data.custmer_code,
-                        data.title,
-                        data.mitsumori_date,
-                        tm,
-                        tm
-                    );
-                    var status = "success";
-                    res.send(status);
-                }
-                else {
-                    console.log("見積UPDATE");
-                    var sql = "UPDATE d_mitsumori SET custmer_code = ?,title = ?,mitsumori_date = ?, upd_date = ? WHERE mitsu_id = ?";
-                    var stmtUp = sqldb.prepare(sql);
-                    stmtUp.run(
-                        data.custmer_code,
-                        data.title,
-                        data.mitsumori_date,
-                        tm,
-                        oldKey
-                    );
-                    var updstatus = "success";
-                    res.send(updstatus);
-                }
-            }
-            else {
-                var errstatus = "error";
-                res.send(errstatus);
-            }
-        });
-    });
+    //     var sqldb = new sqlite3.Database('niscloud.db');
+    //     sqldb.all("SELECT count(*) as reccount FROM d_mitsumori WHERE mitsu_id = ?", oldKey, function(err, rows) {
+    //         console.dir(rows);
+    //     // 	var tm = moment().format('YYYY/MM/DD HH:mm:ss.SSS');
+    //     	var tm = moment().toISOString();
+    //         if (!err) {
+    //             if (rows.reccount == 0) {
+    //                 console.log("見積INSERT");
+    //                 var stmt = sqldb.prepare("INSERT INTO d_mitsumori (custmer_code, title, mitsumori_date, cre_date, upd_date) VALUES (?,?,?,?,?)");
+    //                 stmt.run(
+    //                     data.custmer_code,
+    //                     data.title,
+    //                     data.mitsumori_date,
+    //                     tm,
+    //                     tm
+    //                 );
+    //                 var status = "success";
+    //                 res.send(status);
+    //             }
+    //             else {
+    //                 console.log("見積UPDATE");
+    //                 var sql = "UPDATE d_mitsumori SET custmer_code = ?,title = ?,mitsumori_date = ?, upd_date = ? WHERE mitsu_id = ?";
+    //                 var stmtUp = sqldb.prepare(sql);
+    //                 stmtUp.run(
+    //                     data.custmer_code,
+    //                     data.title,
+    //                     data.mitsumori_date,
+    //                     tm,
+    //                     oldKey
+    //                 );
+    //                 var updstatus = "success";
+    //                 res.send(updstatus);
+    //             }
+    //         }
+    //         else {
+    //             var errstatus = "error";
+    //             res.send(errstatus);
+    //         }
+    //     });
+    // });
     // ---------------------------------
-    // 見積データ処理
+    // 見積明細データ処理
     // ---------------------------------
     moduleApp.post('/bizmitsumorimei', function(req, res) {
         console.log("見積明細データ");
@@ -206,6 +206,53 @@ module.exports.init = function(moduleApp) {
         				result["record"] = rows[0];
                     }
                     res.send(result);
+                }
+            });
+        }
+        // ---------------------------------
+        // データ保存
+        // ---------------------------------
+        if (cmd == 'save-record') {
+            console.log("見積明細データの保存 ");
+            sqldb.all("SELECT count(*) as reccount FROM d_mitsumorimeisai WHERE mitsumei_id = ?", recid, function(err, rows) {
+                var data = req.body.record;
+                var parent_id = req.body.parent_id;
+                var parent_type = req.body.parent_type;
+            	var tm = moment().toISOString();
+                if (!err) {
+                    if (rows[0].reccount == 0) {
+                        console.log("見積明細INSERT");
+                        var uuid = require('node-uuid');
+                        var stmt = sqldb.prepare("INSERT INTO d_mitsumorimeisai (mitsumei_id, parent_id, parent_type, mei_title, mei_bikou, cre_date, upd_date) VALUES (?,?,?,?,?,?,?)");
+                        stmt.run(
+                            uuid.v1(),
+                            parent_id,
+                            parent_type,
+                            data.mei_title,
+                            data.mei_bikou,
+                            tm,
+                            tm
+                        );
+        				var insresult = {};
+        				insresult["status"] = "success";
+                        res.send(insresult);
+                    }
+                    else {
+                        console.log("見積明細UPDATE");
+                        var sql = "UPDATE d_mitsumorimeisai SET parent_id = ?, parent_type = ?, mei_title = ?,mei_bikou = ?, upd_date = ? WHERE mitsumei_id = ?";
+                        var stmtUp = sqldb.prepare(sql);
+                        stmtUp.run(
+                            parent_id,
+                            parent_type,
+                            data.mei_title,
+                            data.mei_bikou,
+                            tm,
+                            recid
+                        );
+        				var updresult = {};
+        				updresult["status"] = "success";
+                        res.send(updresult);
+                    }
                 }
             });
         }

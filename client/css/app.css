@@ -52,12 +52,14 @@ div[class^="col-md-"] {
 }
 
 .clsDateTime {
-    position: absolute;
-    top: 0px;
+    /*position: absolute;*/
+    /*top: 0px;*/
+    /*right: 30px;*/
+    bottom: 0px;
     right: 30px;
 }
 .clsLogout {
-    position: absolute;
+    /*position: absolute;*/
     bottom: 0px;
     right: 30px;
 }
