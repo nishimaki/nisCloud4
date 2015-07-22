@@ -28,13 +28,13 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                 type: 'button',
                 id: 'showMeisaiForm',
                 caption: '見積入力',
-                icon: 'fa-star-empty',
+                icon: 'fa fa-file-text',
                 hint: 'Hint for item 3'
             }, {
                 type: 'button',
-                id: 'item4',
-                caption: 'Item 4',
-                icon: 'fa-comments',
+                id: 'pdf',
+                caption: '見積書作成',
+                icon: 'fa fa-print',
                 hint: 'Hint for item 4'
             }, {
                 type: 'button',
@@ -200,15 +200,21 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
 		        }
 		    });
 
-// 			w2ui['myForm'].on('change', function (target, eventData) {
+// 			w2ui['myMitsumoriForm'].on('change', function (target, eventData) {
 // 			    console.log(target);
 // 			    console.log(eventData);
+// 		        $('#name').prop("disabled", true);
 // 			});		
-// 			w2ui['myForm'].on('load', function (target, eventData) {
-// 			    console.log(target);
-// 			    console.log(eventData);
+// 			w2ui['myMitsumoriForm'].on('load', function (target, eventData) {
+// 			    console.log("load");
+// 		        $('#name').prop("disabled", true);
 // 			});		
-			
+			w2ui['myMitsumoriForm'].on('refresh', function (target, eventData) {
+			    console.log("refresh");
+			    //顧客名を入力不可に設定
+		        $('.clsMitsumoriForm').find('#name').prop("disabled", true);
+			});		
+
 		}
 		// ---------------------------------
 		// 明細グリッド表示
@@ -224,17 +230,47 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                     footer: true,
 		            toolbarAdd: true,
                     selectColumn: false,
+                    expandColumn: true,
                 },
                 toolbar: {
                     items: [
                         { type: 'break' },
-                        { type: 'button', id: 'mybutton', caption: 'ボタン', img: 'icon-folder' }
+                        { type: 'button', id: 'TemplateBtn', caption: 'テンプレートから追加', icon: 'fa fa-folder-open' },
+                        { type: 'break' },
+                        { type: 'button', id: 'TemplateBtn', caption: '上の階層へ', icon: 'fa fa-angle-double-left' },
+                        { type: 'button', id: 'UpBtn', caption: '上へ', icon: 'fa fa-arrow-up' },
+                        { type: 'button', id: 'UpBtn', caption: '下へ', icon: 'fa fa-arrow-down' },
                     ],
                     onClick: function (target, data) {
                         console.log(target);
                     }
                 },
-                columns: [{
+                columns: [
+                    {
+                        field: 'seq',
+                        caption: '順序',
+                        size: '40px',
+                        sortable: true,
+                    }, {
+                        field: 'meisai_type',
+                        caption: '種類',
+                        size: '80px',
+                        sortable: true,
+                        render: function (record, index, col_index) {
+                            var html = '';
+                            var val = this.getCellValue(index, col_index);
+                            if (val == 'M') {
+                                html = '見出し';
+                            }
+                            if (val == 'S') {
+                                html = '明細';
+                            }
+                            // for (var p in people) {
+                            //     if (people[p].id == this.getCellValue(index, col_index)) html = people[p].text;
+                            // }
+                            return html;
+                        }
+                    }, {
                         field: 'mei_title',
                         caption: 'タイトル',
                         size: '200px',
@@ -285,7 +321,10 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
 		        recid : recid,
 		        fields: [
 		            { field: 'mei_title', type: 'text', required: true, html: { caption: '名称', attr: 'style="" size="30"' }},
-		            { field: 'mei_bikou',  type: 'text', required: false, html: { caption: '備考', attr: 'style="" size="30"' }},
+                    { field: 'meisai_type', type: 'list', required: true, html: { caption: '種類', attr: 'style="" size="30"' },
+                        options: { items: [{id:'M', text:'見出し'},{id:'S', text:'明細'}]}
+                    },
+		            { field: 'mei_bikou',  type: 'textarea', required: false, html: { caption: '備考', attr: 'style="height: 60px; width: 400px;" size="30" ' }},
 		        ],
                 postData: {
                     parent_id: parent_id,

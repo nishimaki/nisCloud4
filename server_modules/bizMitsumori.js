@@ -223,9 +223,10 @@ module.exports.init = function(moduleApp) {
                     if (rows[0].reccount == 0) {
                         console.log("見積明細INSERT");
                         var uuid = require('node-uuid');
-                        var stmt = sqldb.prepare("INSERT INTO d_mitsumorimeisai (mitsumei_id, parent_id, parent_type, mei_title, mei_bikou, cre_date, upd_date) VALUES (?,?,?,?,?,?,?)");
+                        var stmt = sqldb.prepare("INSERT INTO d_mitsumorimeisai (mitsumei_id, meisai_type, parent_id, parent_type, mei_title, mei_bikou, cre_date, upd_date) VALUES (?,?,?,?,?,?,?,?)");
                         stmt.run(
                             uuid.v1(),
+                            data.meisai_type.id,
                             parent_id,
                             parent_type,
                             data.mei_title,
@@ -239,9 +240,11 @@ module.exports.init = function(moduleApp) {
                     }
                     else {
                         console.log("見積明細UPDATE");
-                        var sql = "UPDATE d_mitsumorimeisai SET parent_id = ?, parent_type = ?, mei_title = ?,mei_bikou = ?, upd_date = ? WHERE mitsumei_id = ?";
+                        var sql = "UPDATE d_mitsumorimeisai SET meisai_type = ?, parent_id = ?, parent_type = ?, mei_title = ?,mei_bikou = ?, upd_date = ? WHERE mitsumei_id = ?";
                         var stmtUp = sqldb.prepare(sql);
+                        console.log(sql);
                         stmtUp.run(
+                            data.meisai_type.id,
                             parent_id,
                             parent_type,
                             data.mei_title,
