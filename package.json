@@ -19,6 +19,7 @@
     "socket.io": "~0.9.14",
     "sqlite3": "^3.0.9",
     "underscore": "^1.8.3",
+    "wkhtmltopdf": "^0.1.5",
     "ya-csv": "^0.9.4"
   }
 }

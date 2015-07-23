@@ -18,7 +18,7 @@ module.exports.init = function(moduleApp) {
 
     });
 
-    // ポータルデータの取得
+    // PDFテスト(pdfkit)
     moduleApp.get('/portalpdf', function(req, res) {
         var PDFDocument = require('pdfkit');
         var fs = require('fs');
@@ -80,6 +80,42 @@ module.exports.init = function(moduleApp) {
 
     });
 
+    // PDFテスト(wkhtmltopdf)
+    moduleApp.get('/portalpdf2', function(req, res) {
+        var wkhtmltopdf = require('wkhtmltopdf');
+        // var fs = require('fs');
+
+        var filename = "pdftest.pdf";
+        res.setHeader('Content-disposition', 'inline; filename="' + filename + '"');
+        res.setHeader('Content-type', 'application/pdf');
+
+        // URL 
+        wkhtmltopdf('http://yahoo.co.jp/', {
+                pageSize: 'letter'
+            })
+            // .pipe(fs.createWriteStream('out.pdf'));
+            .pipe(res);
+            
+    });
+        
+    // PDFテスト(wkhtmltopdf)
+    moduleApp.get('/portalpdf3', function(req, res) {
+        var wkhtmltopdf = require('wkhtmltopdf');
+        // var fs = require('fs');
+
+        var filename = "pdftest.pdf";
+        res.setHeader('Content-disposition', 'inline; filename="' + filename + '"');
+        res.setHeader('Content-type', 'application/pdf');
+
+        // URL 
+        wkhtmltopdf('<h1>Test</h1><p>Hello world</p>', {
+                pageSize: 'letter'
+            })
+            // .pipe(fs.createWriteStream('out.pdf'));
+            .pipe(res);
+            
+    });
+        
     // // mongo TEST
     // var model = require('./model/mongotest');
 
