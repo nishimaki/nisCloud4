@@ -42,10 +42,15 @@ appModule.mntcustmer.init(app);
 appModule.mntitem.init(app);
 // ポータル初期処理
 appModule.portal.init(app);
+// レポート
+appModule.metalsmith.init(app);
+
 // テストデータ
 // var res = util.testdata(app);
 
 //appModule.user.AddUser(NCMB);
+
+
 
 
 // ルートの初期設定

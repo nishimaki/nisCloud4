@@ -21,6 +21,7 @@ module.exports = {
     bizmitsumori: require('./bizMitsumori'),
     mntcustmer: require('./mntCustmer'),
     mntitem: require('./mntItem'),
+    metalsmith: require('../report/metalsmith'),
 };
 
     

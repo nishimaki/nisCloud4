@@ -11,6 +11,7 @@
     "express": "~3.2.4",
     "form-data": "^1.0.0-rc1",
     "localStorage": "^1.0.3",
+    "metalsmith": "^2.0.1",
     "moment": "^2.10.3",
     "mongoose": "^4.0.6",
     "mongoose-relationship": "^0.1.4",
@@ -21,5 +22,6 @@
     "underscore": "^1.8.3",
     "wkhtmltopdf": "^0.1.5",
     "ya-csv": "^0.9.4"
-  }
+  },
+  "devDependencies": {}
 }

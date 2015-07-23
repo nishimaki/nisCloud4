@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title }}</title>
+</head>
+<body>
+<ul>
+{% for author in authors %}
+  <li{% if loop.first %} class="first"{% endif %}>
+    {{ author }}
+  </li>
+{% endfor %}
+</ul>
+{{ contents | safe }}
+</body>
+</html>

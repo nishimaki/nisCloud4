@@ -95,9 +95,9 @@ module.exports.init = function(moduleApp) {
             })
             // .pipe(fs.createWriteStream('out.pdf'));
             .pipe(res);
-            
+
     });
-        
+
     // PDFテスト(wkhtmltopdf)
     moduleApp.get('/portalpdf3', function(req, res) {
         var wkhtmltopdf = require('wkhtmltopdf');
@@ -113,9 +113,12 @@ module.exports.init = function(moduleApp) {
             })
             // .pipe(fs.createWriteStream('out.pdf'));
             .pipe(res);
-            
+
     });
-        
+
+
+
+
     // // mongo TEST
     // var model = require('./model/mongotest');
 
@@ -133,22 +136,24 @@ module.exports.init = function(moduleApp) {
 
     // sqlite3 TEST
     moduleApp.get('/sqlite', function(req, res) {
-        
+
         var sqlite3 = require('sqlite3').verbose();
         var db = new sqlite3.Database('niscloud.db');
-        
-        db.run("INSERT INTO messages (content) VALUES (?)", "TEST MESSGAE", function(err, rows){
-          if (!err) {
-            db.all("SELECT content FROM messages", function(err, rows){
-              if (!err) {
-                res.send(rows);
-              } else {
+
+        db.run("INSERT INTO messages (content) VALUES (?)", "TEST MESSGAE", function(err, rows) {
+            if (!err) {
+                db.all("SELECT content FROM messages", function(err, rows) {
+                    if (!err) {
+                        res.send(rows);
+                    }
+                    else {
+                        res.send(err);
+                    }
+                });
+            }
+            else {
                 res.send(err);
-              }   
-            }); 
-          } else {
-            res.send(err);
-          }  
+            }
         });
     });
 };
