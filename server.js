@@ -52,7 +52,6 @@ appModule.metalsmith.init(app);
 
 
 
-
 // ルートの初期設定
 app.get('/user/:id', function(req, res) {
     console.log("get!!");

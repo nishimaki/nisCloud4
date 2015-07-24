@@ -1,9 +1,8 @@
 ---
-template: default.html
-title: テスト1111
-authors: ['西巻1111','にしまき2222','3333','4444','5555']
+{
+    "template": "default.html",
+    "mitsumori_date": "2015/03/04",
+    "mitsumori_no": "ABC00123456",
+    "mitsumori_kingaku": "１２３，４５６，７８９円"
+}
 ---
-本文テストあ
-本文テストい
-本文テストう
-本文テストえ

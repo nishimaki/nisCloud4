@@ -116,6 +116,20 @@ module.exports.init = function(moduleApp) {
 
     });
 
+    // PDFテスト(pdfkit)
+    moduleApp.get('/portalpdf4', function(req, res) {
+
+        var PDFDocument = require('pdfkit');
+        var fs = require('fs');
+
+        var doc = new PDFDocument("http://yahoo.co.jp");
+        doc.pipe(fs.createWriteStream('output.pdf'));
+
+        doc.pipe(res);
+        doc.end();
+
+    });
+
 
 
 

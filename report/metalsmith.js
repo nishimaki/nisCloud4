@@ -1,9 +1,9 @@
 // ---------------------------------
-// Portalモジュール
+// metalsmithモジュール
 // ---------------------------------
 module.exports.init = function(moduleApp) {
     // Reportテスト(metalsmith)
-    moduleApp.get('/metal', function(req, res) {
+    moduleApp.post('/report', function(req, res) {
 
         console.log(__dirname);
 
@@ -14,6 +14,19 @@ module.exports.init = function(moduleApp) {
 
         var metalsmith = Metalsmith(__dirname);
 
+        // 指示ファイル作成
+        console.log(req.body);
+        var fs = require('fs');
+        var writedata = "";
+        writedata += "---\n";
+        writedata += JSON.stringify(req.body, null, '    ');
+        writedata += "\n";
+        writedata += "---\n";
+        fs.writeFile(__dirname + '/_source/index.md', writedata , function (err) {
+            console.log(err);
+        });
+
+        // Html生成
         metalsmith
             .source('_source')
             .destination('_build')
@@ -24,7 +37,7 @@ module.exports.init = function(moduleApp) {
             }))
             .build(function(err, files) {
                 if (err) console.log(err);
-                
+                if (!err) {
                     var wkhtmltopdf = require('wkhtmltopdf');
                     var fs = require('fs');
             
@@ -32,14 +45,15 @@ module.exports.init = function(moduleApp) {
                     res.setHeader('Content-disposition', 'inline; filename="' + filename + '"');
                     res.setHeader('Content-type', 'application/pdf');
             
-                    // URL 
+                    // PDFの生成
                     fs.readFile(__dirname + '/_build/index.html', 'utf8', function (err, text) {
                         wkhtmltopdf(text, {
-                                pageSize: 'letter'
+                                pageSize: 'A4'
                             })
-                            // .pipe(fs.createWriteStream('out.pdf'));
+                            // .pipe(fs.createWriteStream('out.pdf'))
                             .pipe(res);
                     });
+                }
             });
     });
 };

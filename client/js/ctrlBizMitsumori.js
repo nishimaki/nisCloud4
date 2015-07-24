@@ -2,10 +2,11 @@
 // ---------------------------------
 // コントローラー BizMitSumoriCtrl
 // ---------------------------------
-app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', 'SharedService', function($rootScope, $scope, $http, $state, SharedService) {
+app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$window', '$state', 'SharedService', function($rootScope, $scope, $http, $sce, $window, $state, SharedService) {
 
     $scope.MessageList = [];
-    $scope.custmerList = [];
+    $scope.content = {};
+    $scope.record = {};
 
     SharedService.SetTitle("見積入力");
     $("#toolbar").w2destroy("toolbar");
@@ -32,7 +33,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                 hint: 'Hint for item 3'
             }, {
                 type: 'button',
-                id: 'pdf',
+                id: 'makeReport',
                 caption: '見積書作成',
                 icon: 'fa fa-print',
                 hint: 'Hint for item 4'
@@ -52,6 +53,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
             if (event.target == "showIchiran") {
                 w2ui['toolbar'].disable('showIchiran');
                 w2ui['toolbar'].disable('showMeisaiForm');
+                w2ui['toolbar'].disable('makeReport');
                 $(".clsMitsumoriIchiran").show();
                 $(".clsMitsumoriDetail").hide();
                 $(".clsMitsumoriForm").show();
@@ -62,6 +64,24 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
                 $(".clsMitsumoriForm").show();
                 $(".clsMitsumoriMeisaiForm").hide();
             }
+            // 見積書作成
+            if (event.target == "makeReport") {
+                var postData = MakeReportData();
+                $http.post('/report', postData, {responseType:'arraybuffer'}) 
+                    .success(function(response) {
+                        console.log("report ok");
+                        var file = new Blob([response], {type: 'application/pdf'});
+                        var fileURL = URL.createObjectURL(file);
+                        console.log(fileURL);
+                        var popupWindow = window.open(fileURL);
+                        // $scope.content = $sce.trustAsResourceUrl(fileURL);
+                        // $scope.content = fileURL
+                        // $window.location = fileURL;
+                    })
+                    .error(function(data) {
+                    });
+
+            }
         }
     });
 
@@ -69,6 +89,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
         console.log("BizMitSumoriCtrl init");
         w2ui['toolbar'].disable('showIchiran');
         w2ui['toolbar'].disable('showMeisaiForm');
+        w2ui['toolbar'].disable('makeReport');
 
         // ---------------------------------
         // グリッド表示
@@ -139,8 +160,10 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
             // ---------------------------------
             onClick: function(event) {
                 var record = w2ui['myMainGrid'].get(event.recid);
+                $scope.record = record;
                 
                 w2ui['toolbar'].enable('showIchiran');
+                w2ui['toolbar'].enable('makeReport');
                 $(".clsMitsumoriIchiran").hide();
                 $(".clsMitsumoriDetail").show();
                 MakeForm(event, event.recid);
@@ -355,5 +378,18 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$state', '
 		}
 		
     };
+	// ---------------------------------
+	// レポートデータ作成
+	// ---------------------------------
+	function MakeReportData() {
+	    var reportData = {};
+
+	    reportData["template"] = "default.html";
+	    reportData["mitsumori_date"] = $scope.record.mitsumori_date;
+	    reportData["mitsumori_no"] = 'ABC00123456';
+	    reportData["mitsumori_kingaku"] = '１２３，４５６，７８９円';
+	    
+	    return reportData;
+	}
 
 }]);
