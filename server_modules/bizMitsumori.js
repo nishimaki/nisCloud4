@@ -13,7 +13,7 @@ module.exports.init = function(moduleApp) {
         var recid = req.body.recid;
         console.log("recid:" + recid);
         var sqldb = new sqlite3.Database('niscloud.db');
-
+        var sql = {};
         // ---------------------------------
         // データ取得
         // ---------------------------------
@@ -27,13 +27,19 @@ module.exports.init = function(moduleApp) {
             // ORDER句
             var order = util.makeSqlOrder(req.body);
 
-            var sql = "SELECT"
+            sql = "SELECT"
                         + " mitsu_id as recid"
                         + ",mitsu_id"
                         + ",custmer_code"
                         + ",title"
                         + ",name"
                         + ",mitsumori_date"
+                        + ",mitsumori_no"
+                        + ",mitsumori_kigen_date"
+                        + ",kesai_jyouken"
+                        + ",nouki_date"
+                        + ",nounyuu_basyo"
+                        + ",tantousya_name"
                         + ",status"
                         + " FROM d_mitsumori MT"
                         + " LEFT OUTER JOIN"
@@ -63,19 +69,46 @@ module.exports.init = function(moduleApp) {
         // ---------------------------------
         if (cmd == 'save-record') {
             console.log("見積データの保存 ");
-            sqldb.all("SELECT count(*) as reccount FROM d_mitsumori WHERE mitsu_id = ?", recid, function(err, rows) {
+            sql = "SELECT"
+                    + " count(*) as reccount"
+                    + " FROM d_mitsumori"
+                    + " WHERE mitsu_id = ?";
+                    
+            sqldb.all(sql, recid, function(err, rows) {
                 var data = req.body.record;
             	var tm = moment().toISOString();
                 if (!err) {
                     if (rows[0].reccount == 0) {
                         console.log("見積INSERT");
                         var uuid = require('node-uuid');
-                        var stmt = sqldb.prepare("INSERT INTO d_mitsumori (mitsu_id, custmer_code, title, mitsumori_date, status, cre_date, upd_date) VALUES (?,?,?,?,?,?,?)");
+                        sql = "INSERT INTO d_mitsumori ("
+                                + " mitsu_id"
+                                + ",custmer_code"
+                                + ",title"
+                                + ",mitsumori_date"
+                                + ",mitsumori_no"
+                                + ",mitsumori_kigen_date"
+                                + ",kesai_jyouken"
+                                + ",nouki_date"
+                                + ",nounyuu_basyo"
+                                + ",tantousya_name"
+                                + ",status"
+                                + ",cre_date"
+                                + ",upd_date"
+                                + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+                        var stmt = sqldb.prepare(sql);
                         stmt.run(
                             uuid.v1(),
                             data.custmer_code,
                             data.title,
                             data.mitsumori_date,
+                            data.mitsumori_no,
+                            data.mitsumori_kigen_date,
+                            data.kesai_jyouken,
+                            data.nouki_date,
+                            data.nounyuu_basyo,
+                            data.tantousya_name,
                             data.status,
                             tm,
                             tm
@@ -86,12 +119,31 @@ module.exports.init = function(moduleApp) {
                     }
                     else {
                         console.log("見積UPDATE");
-                        var sql = "UPDATE d_mitsumori SET custmer_code = ?,title = ?,mitsumori_date = ?,status = ?, upd_date = ? WHERE mitsu_id = ?";
+                        var sql = "UPDATE d_mitsumori SET"
+                                    + " custmer_code = ?"
+                                    + ",title = ?"
+                                    + ",mitsumori_date = ?"
+                                    + ",mitsumori_no = ?"
+                                    + ",mitsumori_kigen_date = ?"
+                                    + ",kesai_jyouken = ?"
+                                    + ",nouki_date = ?"
+                                    + ",nounyuu_basyo = ?"
+                                    + ",tantousya_name = ?"
+                                    + ",status = ?"
+                                    + ",upd_date = ?"
+                                    + " WHERE"
+                                    + " mitsu_id = ?";
                         var stmtUp = sqldb.prepare(sql);
                         stmtUp.run(
                             data.custmer_code,
                             data.title,
                             data.mitsumori_date,
+                            data.mitsumori_no,
+                            data.mitsumori_kigen_date,
+                            data.kesai_jyouken,
+                            data.nouki_date,
+                            data.nounyuu_basyo,
+                            data.tantousya_name,
                             data.status,
                             tm,
                             recid
@@ -105,55 +157,6 @@ module.exports.init = function(moduleApp) {
         }
     });
 
-    // // ---------------------------------
-    // // 見積の保存
-    // // ---------------------------------
-    // moduleApp.post('/mitsumori', function(req, res) {
-    //     console.log("見積の保存 ");
-    //     console.dir(req.body);
-    //     var oldKey = req.body.mitsu_id;
-    //     var data = req.body.record;
-        
-    //     var sqldb = new sqlite3.Database('niscloud.db');
-    //     sqldb.all("SELECT count(*) as reccount FROM d_mitsumori WHERE mitsu_id = ?", oldKey, function(err, rows) {
-    //         console.dir(rows);
-    //     // 	var tm = moment().format('YYYY/MM/DD HH:mm:ss.SSS');
-    //     	var tm = moment().toISOString();
-    //         if (!err) {
-    //             if (rows.reccount == 0) {
-    //                 console.log("見積INSERT");
-    //                 var stmt = sqldb.prepare("INSERT INTO d_mitsumori (custmer_code, title, mitsumori_date, cre_date, upd_date) VALUES (?,?,?,?,?)");
-    //                 stmt.run(
-    //                     data.custmer_code,
-    //                     data.title,
-    //                     data.mitsumori_date,
-    //                     tm,
-    //                     tm
-    //                 );
-    //                 var status = "success";
-    //                 res.send(status);
-    //             }
-    //             else {
-    //                 console.log("見積UPDATE");
-    //                 var sql = "UPDATE d_mitsumori SET custmer_code = ?,title = ?,mitsumori_date = ?, upd_date = ? WHERE mitsu_id = ?";
-    //                 var stmtUp = sqldb.prepare(sql);
-    //                 stmtUp.run(
-    //                     data.custmer_code,
-    //                     data.title,
-    //                     data.mitsumori_date,
-    //                     tm,
-    //                     oldKey
-    //                 );
-    //                 var updstatus = "success";
-    //                 res.send(updstatus);
-    //             }
-    //         }
-    //         else {
-    //             var errstatus = "error";
-    //             res.send(errstatus);
-    //         }
-    //     });
-    // });
     // ---------------------------------
     // 見積明細データ処理
     // ---------------------------------
@@ -187,6 +190,11 @@ module.exports.init = function(moduleApp) {
                         + ",parent_id"
                         + ",parent_type"
                         + ",mei_title"
+                        + ",mei_kikaku"
+                        + ",mei_tanka"
+                        + ",mei_suuryo"
+                        + ",mei_tani"
+                        + ",mei_kingaku"
                         + ",mei_bikou"
                         + " FROM d_mitsumorimeisai MM"
                         + " WHERE 1 = 1"
@@ -223,13 +231,33 @@ module.exports.init = function(moduleApp) {
                     if (rows[0].reccount == 0) {
                         console.log("見積明細INSERT");
                         var uuid = require('node-uuid');
-                        var stmt = sqldb.prepare("INSERT INTO d_mitsumorimeisai (mitsumei_id, meisai_type, parent_id, parent_type, mei_title, mei_bikou, cre_date, upd_date) VALUES (?,?,?,?,?,?,?,?)");
+                        sql = "INSERT INTO d_mitsumorimeisai ("
+                                + " mitsumei_id"
+                                + ",meisai_type"
+                                + ",parent_id"
+                                + ",parent_type"
+                                + ",mei_title"
+                                + ",mei_kikaku"
+                                + ",mei_tanka"
+                                + ",mei_suuryo"
+                                + ",mei_tani"
+                                + ",mei_kingaku"
+                                + ",mei_bikou"
+                                + ",cre_date"
+                                + ",upd_date"
+                                + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                        var stmt = sqldb.prepare(sql);
                         stmt.run(
                             uuid.v1(),
                             data.meisai_type.id,
                             parent_id,
                             parent_type,
                             data.mei_title,
+                            data.mei_kikaku,
+                            data.mei_tanka,
+                            data.mei_suuryo,
+                            data.mei_tani,
+                            data.mei_kingaku,
                             data.mei_bikou,
                             tm,
                             tm
@@ -240,7 +268,20 @@ module.exports.init = function(moduleApp) {
                     }
                     else {
                         console.log("見積明細UPDATE");
-                        var sql = "UPDATE d_mitsumorimeisai SET meisai_type = ?, parent_id = ?, parent_type = ?, mei_title = ?,mei_bikou = ?, upd_date = ? WHERE mitsumei_id = ?";
+                        var sql = "UPDATE d_mitsumorimeisai SET"
+                                    + " meisai_type = ?"
+                                    + ",parent_id = ?"
+                                    + ",parent_type = ?"
+                                    + ",mei_title = ?"
+                                    + ",mei_kikaku = ?"
+                                    + ",mei_tanka = ?"
+                                    + ",mei_suuryo = ?"
+                                    + ",mei_tani = ?"
+                                    + ",mei_kingaku = ?"
+                                    + ",mei_bikou = ?"
+                                    + ",upd_date = ?"
+                                    + " WHERE"
+                                    + " mitsumei_id = ?";
                         var stmtUp = sqldb.prepare(sql);
                         console.log(sql);
                         stmtUp.run(
@@ -248,6 +289,11 @@ module.exports.init = function(moduleApp) {
                             parent_id,
                             parent_type,
                             data.mei_title,
+                            data.mei_kikaku,
+                            data.mei_tanka,
+                            data.mei_suuryo,
+                            data.mei_tani,
+                            data.mei_kingaku,
                             data.mei_bikou,
                             tm,
                             recid
@@ -276,8 +322,41 @@ module.exports.init = function(moduleApp) {
             sqldb.run("DROP TABLE IF EXISTS d_mitsumorimeisai");
 
             // テーブルを作成する。
-            sqldb.run("CREATE TABLE d_mitsumori (mitsu_id PRIMARY KEY, custmer_code, title, mitsumori_date DATE, status, cre_date DATETIME, upd_date DATETIME)");
-            sqldb.run("CREATE TABLE d_mitsumorimeisai (mitsumei_id PRIMARY KEY, meisai_type, seq, template_id, parent_type, parent_id, mei_title, mei_bikou,  cre_date DATETIME, upd_date DATETIME)");
+            var sql = {};
+            sql = "CREATE TABLE d_mitsumori ("
+                    + " mitsu_id PRIMARY KEY"
+                    + ",custmer_code"
+                    + ",title"
+                    + ",mitsumori_date DATE"
+                    + ",mitsumori_no"
+                    + ",mitsumori_kigen_date DATE"
+                    + ",kesai_jyouken"
+                    + ",nouki_date DATE"
+                    + ",nounyuu_basyo"
+                    + ",tantousya_name"
+                    + ",status"
+                    + ",cre_date DATETIME"
+                    + ",upd_date DATETIME"
+                    + ")";
+            sqldb.run(sql);
+            sql = "CREATE TABLE d_mitsumorimeisai ("
+                    + " mitsumei_id PRIMARY KEY"
+                    + ",meisai_type"
+                    + ",seq"
+                    + ",template_id"
+                    + ",parent_type"
+                    + ",parent_id"
+                    + ",mei_title"
+                    + ",mei_kikaku"
+                    + ",mei_tanka"
+                    + ",mei_suuryo"
+                    + ",mei_tani"
+                    + ",mei_kingaku"
+                    + ",mei_bikou"
+                    + ",cre_date DATETIME"
+                    + ",upd_date DATETIME"
+                    + ")";
+            sqldb.run(sql);
 
             var readCount = 0;
             // CSV読み込み(見積)

@@ -73,6 +73,14 @@
 					MakeForm(event, "");
 				},
 				// ---------------------------------
+				// 編集ボタンクリック
+				// ---------------------------------
+				onEdit: function(event) {
+					var id = w2ui['myGrid'].getSelection();
+					console.log(id);
+					MakeForm(event, id);
+				},
+				// ---------------------------------
 				// 削除ボタンクリック後
 				// ---------------------------------
 				onDeleted: function(event) {
