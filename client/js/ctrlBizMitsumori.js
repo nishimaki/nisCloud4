@@ -229,7 +229,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
 		        recid : recid,
 		        fields: [
 		            { field: 'custmer_code', type: 'text', required: true, html: { caption: '顧客コード', attr: 'style="" maxlength="5" size="5"' }},
-		            { field: 'name',  type: 'text', required: false, html: { caption: '顧客名', attr: 'style="" size="30"' }},
+		            { field: 'name',  type: 'text', required: false, html: { caption: '顧客名', attr: 'disabled="disabled" style="" size="30"' }},
 		            { field: 'title',  type: 'text', required: false, html: { caption: '見積名', attr: 'style="" size="30"' }},
 		            {
 		            	field: 'mitsumori_date',
@@ -297,8 +297,8 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
 // 			});		
 			w2ui['myMitsumoriForm'].on('refresh', function (target, eventData) {
 			    console.log("refresh");
-			    //顧客名を入力不可に設定
-		        $('.clsMitsumoriForm').find('#name').prop("disabled", true);
+                //顧客名を入力不可に設定
+                //      $('.clsMitsumoriForm').find('#name').prop("disabled", true);
 			});		
 
 		}
@@ -329,6 +329,15 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                     ],
                     onClick: function (target, data) {
                         console.log(target);
+                        // テンプレートから追加
+                        if (target == 'TemplateBtn') {
+                            // 編集中の見積レコードを取得
+                            var mitumori_rec = w2ui['myMainGrid'].get(recid);
+                            console.dir(mitumori_rec);
+                            // ダイアログに見積レコードを渡して表示する
+                            openPopup_temp(mitumori_rec);
+                        }
+    
                     }
                 },
                 columns: [
@@ -340,7 +349,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                     }, {
                         field: 'meisai_type',
                         caption: '種類',
-                        size: '80px',
+                        size: '40px',
                         sortable: true,
                         render: function (record, index, col_index) {
                             var html = '';
@@ -360,6 +369,26 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                         field: 'mei_title',
                         caption: 'タイトル',
                         size: '200px',
+                        sortable: true
+                    }, {
+                        field: 'mei_tanka',
+                        caption: '単価',
+                        size: '70px',
+                        sortable: true
+                    }, {
+                        field: 'mei_suuryo',
+                        caption: '数量',
+                        size: '70px',
+                        sortable: true
+                    }, {
+                        field: 'mei_tani',
+                        caption: '単位',
+                        size: '50px',
+                        sortable: true
+                    }, {
+                        field: 'mei_kingaku',
+                        caption: '金額',
+                        size: '70px',
                         sortable: true
                     }, {
                         field: 'mei_bikou',
@@ -421,7 +450,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
 		            { field: 'mei_tanka', type: 'text', required: true, html: { caption: '単価', attr: 'style="" size="30"' }},
 		            { field: 'mei_suuryo', type: 'text', required: true, html: { caption: '数量', attr: 'style="" size="30"' }},
 		            { field: 'mei_tani', type: 'text', required: true, html: { caption: '単位', attr: 'style="" size="30"' }},
-		            { field: 'mei_kingaku', type: 'text', required: true, html: { caption: '金額', attr: 'style="" size="30"' }},
+		            { field: 'mei_kingaku', type: 'text', required: true, html: { caption: '金額', attr: 'disabled="disabled" style="" size="30"' }},
 		            { field: 'mei_bikou',  type: 'textarea', required: false, html: { caption: '備考', attr: 'style="height: 60px; width: 400px;" size="30" ' }},
 		        ],
                 postData: {

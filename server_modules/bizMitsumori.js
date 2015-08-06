@@ -95,7 +95,7 @@ module.exports.init = function(moduleApp) {
                                 + ",status"
                                 + ",cre_date"
                                 + ",upd_date"
-                                + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+                                + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
                         var stmt = sqldb.prepare(sql);
                         stmt.run(
