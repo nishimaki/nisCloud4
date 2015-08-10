@@ -40,7 +40,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                 hint: 'Hint for item 4'
             }, {
                 type: 'button',
-                id: 'item5',
+                id: 'makeReport2',
                 caption: 'Item 5',
                 icon: 'fa-beaker',
                 hint: 'Hint for item 5'
@@ -96,6 +96,14 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                     .error(function(data) {
                     });
 
+            }
+            // 見積書作成
+            if (event.target == "makeReport2") {
+                $scope.record_meisai = w2ui['myMeisaiGrid'].records;
+                // ダイアログに見積レコードを渡して表示する
+                console.dir($scope.record);
+                console.dir($scope.record_meisai);
+                openPopup_report($scope.record, $scope.record_meisai);
             }
         }
     });

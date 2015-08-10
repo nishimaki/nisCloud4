@@ -1,7 +1,7 @@
 'use strict';
 var mitumori_rec = {};
 var mitumorimeisai_rec = {};
-var meisai_type = {};
+var m_type = 'S';
 
 var mitsumori_config = {
     layout: {
@@ -25,13 +25,13 @@ var mitsumori_config = {
             switch (event.target) {
                 case 'gridItem':
                     // 明細タイプ：商品
-                    meisai_type = 'S';
+                    m_type = 'S';
                     // 商品グリッドの表示
                     w2ui.temp_layout.content('main', w2ui.temp_gridItem);
                     break;
                 case 'gridTemplate':
                     // 明細タイプ：見出し
-                    meisai_type = 'M';
+                    m_type = 'M';
                     // テンプレートグリッドの表示
                     w2ui.temp_layout.content('main', '<div style="padding: 10px">Some HTML</div>');
                     $(w2ui.temp_layout.el('main'))
@@ -58,8 +58,10 @@ var mitsumori_config = {
             onClick: function (target, data) {
                 console.log(target);
                 if (target == 'addItem'){
-                    // console.dir(mitumori_rec);
+                    console.dir(mitumori_rec);
                     console.dir(data);
+                    console.log("m-type:");
+                    console.dir(m_type);
                     // 明細への登録
                     var postData = {
                         cmd: 'save-record',
@@ -69,7 +71,7 @@ var mitsumori_config = {
                         record:  {
                             mei_title: mitumorimeisai_rec.name,
                             meisai_type: {
-                                id: meisai_type
+                                id: m_type,
                             },
                             mei_kikaku: mitumorimeisai_rec.spec,
                             mei_tanka: mitumorimeisai_rec.price,
