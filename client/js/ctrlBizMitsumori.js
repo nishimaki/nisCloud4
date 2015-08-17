@@ -23,13 +23,13 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
             }, {
                 type: 'button',
                 id: 'showIchiran',
-                caption: '一覧表示',
+                caption: '一覧表示に戻る',
                 icon: 'glyphicon glyphicon-th-list',
                 hint: 'Hint for item 2'
             }, {
                 type: 'button',
                 id: 'showMeisaiForm',
-                caption: '見積入力',
+                caption: '見積入力に戻る',
                 icon: 'fa fa-file-text',
                 hint: 'Hint for item 3'
             }, {
@@ -38,12 +38,6 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                 caption: '見積書作成',
                 icon: 'fa fa-print',
                 hint: 'Hint for item 4'
-            }, {
-                type: 'button',
-                id: 'makeReport2',
-                caption: 'Item 5',
-                icon: 'fa-beaker',
-                hint: 'Hint for item 5'
             }
         ],
         onClick: function(event) {
@@ -65,40 +59,25 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                 $(".clsMitsumoriForm").show();
                 $(".clsMitsumoriMeisaiForm").hide();
             }
-            // 見積書作成
+            // 見積書作成（angularjsでの操作）
+            // if (event.target == "makeReport") {
+                // $scope.record_meisai = w2ui['myMeisaiGrid'].records;
+                // console.dir($scope.record_meisai);
+                
+                // var postData = MakeReportData();
+                // $http.post('/report', postData, {responseType:'arraybuffer'}) 
+                //     .success(function(response) {
+                //         console.log("report ok");
+                //         var file = new Blob([response], {type: 'application/pdf'});
+                //         var fileURL = URL.createObjectURL(file);
+                //         console.log(fileURL);
+                //         var popupWindow = window.open(fileURL);
+                //     })
+                //     .error(function(data) {
+                //     });
+            // }
+            // 見積書作成（ダイアログ選択）
             if (event.target == "makeReport") {
-                
-                $scope.record_meisai = w2ui['myMeisaiGrid'].records;
-                console.dir($scope.record_meisai);
-                
-                var postData = MakeReportData();
-                $http.post('/report', postData, {responseType:'arraybuffer'}) 
-                    .success(function(response) {
-                        console.log("report ok");
-                        var file = new Blob([response], {type: 'application/pdf'});
-                        var fileURL = URL.createObjectURL(file);
-                        console.log(fileURL);
-                        var popupWindow = window.open(fileURL);
-                        
-                        //@@@@@
-                        // w2popup.load({ url: fileURL });
-                        // w2popup.open({
-                        //     title   : 'Popup Title HTML',
-                        //     body    : fileURL,
-                        //     buttons : 'Buttons HTML'
-                        // });                        
-                        //@@@@@
-
-                        // $scope.content = $sce.trustAsResourceUrl(fileURL);
-                        // $scope.content = fileURL
-                        // $window.location = fileURL;
-                    })
-                    .error(function(data) {
-                    });
-
-            }
-            // 見積書作成
-            if (event.target == "makeReport2") {
                 $scope.record_meisai = w2ui['myMeisaiGrid'].records;
                 // ダイアログに見積レコードを渡して表示する
                 console.dir($scope.record);
@@ -329,11 +308,11 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                 toolbar: {
                     items: [
                         { type: 'break' },
-                        { type: 'button', id: 'TemplateBtn', caption: 'テンプレートから追加', icon: 'fa fa-folder-open' },
+                        { type: 'button', id: 'TemplateBtn', caption: 'リストから追加', icon: 'fa fa-folder-open' },
                         { type: 'break' },
-                        { type: 'button', id: 'TemplateBtn', caption: '上の階層へ', icon: 'fa fa-angle-double-left' },
+                        { type: 'button', id: 'UpLevel', caption: '上の階層へ', icon: 'fa fa-angle-double-left' },
                         { type: 'button', id: 'UpBtn', caption: '上へ', icon: 'fa fa-arrow-up' },
-                        { type: 'button', id: 'UpBtn', caption: '下へ', icon: 'fa fa-arrow-down' },
+                        { type: 'button', id: 'DownBtn', caption: '下へ', icon: 'fa fa-arrow-down' },
                     ],
                     onClick: function (target, data) {
                         console.log(target);
@@ -344,6 +323,10 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                             console.dir(mitumori_rec);
                             // ダイアログに見積レコードを渡して表示する
                             openPopup_temp(mitumori_rec);
+                        }
+                        // テンプレートから追加
+                        if (target == 'DownBtn') {
+                            console.dir(w2ui['myMeisaiGrid'].records);
                         }
     
                     }
@@ -475,7 +458,19 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
 							form2grid(recid, 'myMitsumoriMeisaiForm', 'myMeisaiGrid');
 		                });
 		            }
-		        }
+		        },
+                onChange: function (event) {
+                    // 単価・数量変更時の処理
+                    if (event.target == 'mei_tanka' || event.target == 'mei_suuryo') {
+                        var tanka = $('#mei_tanka').val().replace(/,/g,"");
+                        var suuryo = $('#mei_suuryo').val().replace(/,/g,"");
+                        var kingaku = tanka * suuryo;
+                        w2ui['myMitsumoriMeisaiForm'].record['mei_tanka'] = numeral(tanka).format('0,0'); 
+                        w2ui['myMitsumoriMeisaiForm'].record['mei_suuryo'] = numeral(suuryo).format('0,0'); 
+                        w2ui['myMitsumoriMeisaiForm'].record['mei_kingaku'] = numeral(kingaku).format('0,0'); 
+                        w2ui['myMitsumoriMeisaiForm'].refresh();	                    
+                    }
+                }
 		    });
 
 // 			w2ui['myForm'].on('change', function (target, eventData) {

@@ -181,6 +181,7 @@ module.exports.init = function(moduleApp) {
             if (parent_id != undefined && parent_id != "") {
                 where += " and parent_id = '" + parent_id + "' ";
             }
+            var order = util.makeSqlOrder(req.body);
             var sql = "SELECT"
                         + " mitsumei_id as recid"
                         + ",mitsumei_id"
@@ -199,7 +200,8 @@ module.exports.init = function(moduleApp) {
                         + " FROM d_mitsumorimeisai MM"
                         + " WHERE 1 = 1"
                         + where
-                        + " ORDER BY seq";
+                        + order;
+
             console.log("sql:" + sql);
             sqldb.all(sql, function(err, rows) {
                 if (!err) {

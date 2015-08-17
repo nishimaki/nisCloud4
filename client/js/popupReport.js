@@ -1,7 +1,8 @@
 'use strict';
 var mitumori_rec = {};
 var mitumorimeisai_rec = {};
-var meisai_type = {};
+var report_filname = "";
+
 
 var report_config = {
     layout: {
@@ -19,8 +20,8 @@ var report_config = {
             { field: 'type', caption: '様式', size: '33%', sortable: true, searchable: true },
         ],
         records: [
-            { recid: 1, name: '見積書　様式１', type: 'A4縦' },
-            { recid: 2, name: '見積書　様式２', type: 'A4縦' },
+            { recid: 1, name: '見積書　様式１', type: 'A4縦', filename: 'report1.html' },
+            { recid: 2, name: '見積書　様式２', type: 'A4縦', filename: 'report2.html' },
         ],
         // ---------------------------------
         // ロード完了
@@ -39,10 +40,11 @@ var report_config = {
                     form.recid  = grid.getSelection();
                     form.record = $.extend(true, {}, grid.get(sel[0]));
                     form.refresh();
+                    report_filname = grid.get(sel[0]).filename;
                 } else {
                     form.clear();
                 }
-            }
+            };
         }
     },
     form: { 
@@ -51,31 +53,58 @@ var report_config = {
         fields: [
             { name: 'name', type: 'text'},
             { name: 'type', type: 'text'},
+            { name: 'filename', type: 'text'},
         ],
         actions: {
             pdf: function () {
                 console.log("pdf");
-                
-                var postData = MakeReportData();
-                $.ajax({
-                    type: "POST",
-                    url: "/report",
-                    data: postData,
-                    success: function(response) {
-                        console.log("report ok");
-                        var file = new Blob([response], {type: 'application/pdf'});
-                        var fileURL = URL.createObjectURL(file);
-                        console.log(fileURL);
-                        var popupWindow = window.open(fileURL);
-
-                        // ダイアログを閉じる
-                        // w2popup.close();
-                    }
-                });
+                makePdf("pdf");
+            },
+            download: function () {
+                console.log("download");
+                makePdf("download");
             }
         }
     }
 };
+function makePdf(mode) {
+    if (report_filname == "") {
+        w2alert('出力する見積書を選択して下さい。');
+        return;
+    }
+
+    // ダイアログのロック
+    w2popup.lock('作成中...', true);
+
+    // 送信データ作成
+    var postData = MakeReportData();
+    // バイナリデータの受信
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/report', true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function(e) {
+        // ArrayBufferで返ってくる
+        var file = new Blob([xhr.response], {type: 'application/pdf;name="abc.pdf"'});
+        var fileURL = URL.createObjectURL(file);
+        if (mode == 'pdf') {
+            // popup windowでの表示
+            window.open(fileURL);
+        } else {
+            // ファイルのダウンロード
+            var a = document.createElement('a');
+            a.download = "test.pdf";
+            a.href = fileURL;
+            a.click();  
+        }
+        // ダイアログのロック解除
+        w2popup.unlock();
+        // ダイアログを閉じる
+        // w2popup.close();
+        
+    };
+    xhr.send(JSON.stringify(postData));
+}
 
 $(function () {
     // w2utils.locale('/json_path/locale/ja-jp.json');
@@ -104,7 +133,7 @@ function openPopup_report(mitsu, mitsumei) {
         onToggle: function (event) { 
             event.onComplete = function () {
                 w2ui.report_layout.resize();
-            }
+            };
         }
     });
 }
@@ -115,10 +144,10 @@ function openPopup_report(mitsu, mitsumei) {
 function MakeReportData() {
     var reportData = {};
 
-    reportData["template"] = "default.html";
+    reportData["template"] = report_filname;
     reportData["mitsumori_date"] = mitumori_rec.mitsumori_date;
     reportData["mitsumori_no"] = mitumori_rec.mitsumori_no;
-    reportData["mitsumori_kingaku"] = '１２３，４５６，７８９円';
+    reportData["mitsumori_kingaku"] = '';
     reportData["title"] = mitumori_rec.title;
     reportData["name"] = mitumori_rec.name;
     reportData["mitsumori_kigen_date"] = mitumori_rec.mitsumori_kigen_date;
@@ -130,20 +159,24 @@ function MakeReportData() {
 
     // 明細行の移送
     reportData["mitsumori_meisai"] = mitumorimeisai_rec;
+
     // 明細行の編集
     _.each(reportData.mitsumori_meisai, function(meisai) {
+        // 単価
         if (meisai.mei_tanka != undefined && meisai.mei_tanka != null) {
             var num = numeral().unformat(meisai.mei_tanka);
             if (w2utils.isInt(num)) {
                 meisai.mei_tanka = numeral(num).format('0,0');
             }
         }
+        // 数量
         if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null) {
             var num = numeral().unformat(meisai.mei_suuryo);
             if (w2utils.isInt(meisai.mei_suuryo)) {
                 meisai.mei_suuryo = numeral(num).format('0,0');
             }
         }
+        // 金額
         if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null) {
             var num = numeral().unformat(meisai.mei_kingaku);
             if (w2utils.isInt(meisai.mei_kingaku)) {
@@ -178,8 +211,13 @@ function MakeReportData() {
     });
     reportData["goukei_suuryo"] = numeral(goukei_suu).format('0,0');
     reportData["goukei_kingaku"] = numeral(goukei_kin).format('0,0');
-
-
+    
+    // 数値を全角変換
+    var total = numeral(goukei_kin).format('0,0');
+    total = total.replace( /[A-Za-z0-9-!"#$%&'()=<>,.?_\[\]{}@^~\\]/g, function(s) {
+        return String.fromCharCode(s.charCodeAt(0) + 65248);
+    });
+    reportData["mitsumori_kingaku"] = total + '円';
 
     return reportData;
 }
