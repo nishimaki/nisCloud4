@@ -222,12 +222,13 @@ module.exports.init = function(moduleApp) {
         // ---------------------------------
         // データ保存
         // ---------------------------------
-        if (cmd == 'save-record') {
+        else if (cmd == 'save-record') {
             console.log("見積明細データの保存 ");
             sqldb.all("SELECT count(*) as reccount FROM d_mitsumorimeisai WHERE mitsumei_id = ?", recid, function(err, rows) {
                 var data = req.body.record;
                 var parent_id = req.body.parent_id;
                 var parent_type = req.body.parent_type;
+                var seq = req.body.seq;
             	var tm = moment().toISOString();
                 if (!err) {
                     if (rows[0].reccount == 0) {
@@ -238,6 +239,7 @@ module.exports.init = function(moduleApp) {
                                 + ",meisai_type"
                                 + ",parent_id"
                                 + ",parent_type"
+                                + ",seq"
                                 + ",mei_title"
                                 + ",mei_kikaku"
                                 + ",mei_tanka"
@@ -247,13 +249,14 @@ module.exports.init = function(moduleApp) {
                                 + ",mei_bikou"
                                 + ",cre_date"
                                 + ",upd_date"
-                                + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                                + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                         var stmt = sqldb.prepare(sql);
                         stmt.run(
                             uuid.v1(),
                             data.meisai_type.id,
                             parent_id,
                             parent_type,
+                            seq,
                             data.mei_title,
                             data.mei_kikaku,
                             data.mei_tanka,
@@ -274,6 +277,7 @@ module.exports.init = function(moduleApp) {
                                     + " meisai_type = ?"
                                     + ",parent_id = ?"
                                     + ",parent_type = ?"
+                                    + ",seq = ?"
                                     + ",mei_title = ?"
                                     + ",mei_kikaku = ?"
                                     + ",mei_tanka = ?"
@@ -290,6 +294,7 @@ module.exports.init = function(moduleApp) {
                             data.meisai_type.id,
                             parent_id,
                             parent_type,
+                            seq,
                             data.mei_title,
                             data.mei_kikaku,
                             data.mei_tanka,
@@ -306,6 +311,10 @@ module.exports.init = function(moduleApp) {
                     }
                 }
             });
+        } else {
+			var updresult = {};
+			updresult["status"] = "success";
+            res.send(updresult);
         }
     });
 

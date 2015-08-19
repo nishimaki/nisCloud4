@@ -1,5 +1,6 @@
 'use strict';
 var mitumori_rec = {};
+var meisaiLength = 0;
 var mitumorimeisai_rec = {};
 var m_type = 'S';
 
@@ -68,6 +69,7 @@ var mitsumori_config = {
                         recid: '',
                         parent_id: mitumori_rec.recid,
                         parent_type: 'T',
+                        seq: meisaiLength + 1,
                         record:  {
                             mei_title: mitumorimeisai_rec.name,
                             meisai_type: {
@@ -153,8 +155,9 @@ $(function () {
     $().w2grid(mitsumori_config.grid);
 });
 
-function openPopup_temp(rec) {
+function openPopup_temp(rec, meisailen) {
     mitumori_rec = rec;
+    meisaiLength = meisailen;
     w2popup.open({
         title   : '見積明細',
         width   : 900,

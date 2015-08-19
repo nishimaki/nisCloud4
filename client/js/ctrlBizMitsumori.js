@@ -9,6 +9,8 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
     $scope.record = {};
     $scope.record_meisai = {};
 
+    $scope.meisaiCurentId = "";
+
     SharedService.SetTitle("見積入力");
     $("#toolbar").w2destroy("toolbar");
     $('#toolbar').w2toolbar({
@@ -94,7 +96,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
         w2ui['toolbar'].disable('makeReport');
 
         // ---------------------------------
-        // グリッド表示
+        // メイングリッド表示
         // ---------------------------------
         $("#myMainGrid").w2destroy("myMainGrid");
         $('#myMainGrid').w2grid({
@@ -164,7 +166,8 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
             onClick: function(event) {
                 var record = w2ui['myMainGrid'].get(event.recid);
                 $scope.record = record;
-                
+                // 明細カレント行のクリア
+                $scope.meisaiCurentId = "";                
                 w2ui['toolbar'].enable('showIchiran');
                 w2ui['toolbar'].enable('makeReport');
                 $(".clsMitsumoriIchiran").hide();
@@ -202,10 +205,16 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                 MakeForm(event, "");
                 MakeMeisaiGrid(event, "DUMMY", record.mitsu_id);
 			},
+			// ---------------------------------
+			// ソートリクエスト
+			// ---------------------------------
+            onSort: function(event) {
+                console.log(event);
+            },
         });
 
 		// ---------------------------------
-		// フォーム表示
+		// 見積フォーム表示
 		// ---------------------------------
 		function MakeForm(event, recid) {
 
@@ -318,15 +327,76 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                         console.log(target);
                         // テンプレートから追加
                         if (target == 'TemplateBtn') {
+                            var meisaiLength = w2ui['myMeisaiGrid'].records.length;
                             // 編集中の見積レコードを取得
                             var mitumori_rec = w2ui['myMainGrid'].get(recid);
                             console.dir(mitumori_rec);
                             // ダイアログに見積レコードを渡して表示する
-                            openPopup_temp(mitumori_rec);
+                            openPopup_temp(mitumori_rec, meisaiLength);
                         }
-                        // テンプレートから追加
-                        if (target == 'DownBtn') {
-                            console.dir(w2ui['myMeisaiGrid'].records);
+                        // 行の移動
+                        if (target == 'UpBtn' || target == 'DownBtn') {
+                            var meirecs = w2ui['myMeisaiGrid'].records;
+                            var idx1 = 0;
+                            var idx2 = 0;
+                            // 入れ替え
+                            var meiArray = _.toArray(meirecs);
+                            for (var idx = 0; idx < meiArray.length; idx++) {
+                                // カレント行の判断
+                                if (meiArray[idx].recid == $scope.meisaiCurentId) {
+                                    // 行の入れ替え
+                                    if (target == 'UpBtn') {
+                                        if (idx - 1 >= 0) {
+                                            var wk = meiArray[idx-1];
+                                            meiArray[idx-1] = meiArray[idx];
+                                            meiArray[idx] = wk;
+                                            idx1 = idx;
+                                            idx2 = idx - 1;
+                                            break;
+                                        }
+                                    }
+                                    if (target == 'DownBtn') {
+                                        if (idx + 1 < meiArray.length) {
+                                            var wk = meiArray[idx+1];
+                                            meiArray[idx+1] = meiArray[idx];
+                                            meiArray[idx] = wk;
+                                            idx1 = idx;
+                                            idx2 = idx + 1;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            // SEQの振り直し
+                            var idx = 1;
+                            _.each(meiArray, function(meisai) {
+                                meisai.seq = idx++;
+                            });
+                            // レコードへ戻す
+                            w2ui['myMeisaiGrid'].records = meiArray;
+                            // グリッドの再描画
+                            w2ui['myMeisaiGrid'].refresh();
+                            // カレント行をクリック
+                            w2ui['myMeisaiGrid'].click($scope.meisaiCurentId);
+                            // 更新
+                            meirecs = w2ui['myMeisaiGrid'].records;
+                            var postData1 = makeMitsumriMeisaiPostData($scope.record, meiArray[idx1]);
+                            var postData2 = makeMitsumriMeisaiPostData($scope.record, meiArray[idx2]);
+                            $.ajax({
+                                type: "POST",
+                                url: "/bizmitsumorimei",
+                                data: postData1,
+                                success: function(msg) {
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/bizmitsumorimei",
+                                        data: postData2,
+                                        success: function(msg) {
+                                        }
+                                    });
+                                }
+                            });
+                            
                         }
     
                     }
@@ -408,18 +478,39 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                     $(".clsMitsumoriForm").hide();
                     $(".clsMitsumoriMeisaiForm").show();
                     MakeMeisaiForm(event, event.recid, parent_id, parent_type);
+                    // 現在の明細カレント行
+                    $scope.meisaiCurentId = event.recid;
                 },
     			// ---------------------------------
     			// 追加ボタンクリック
     			// ---------------------------------
     			onAdd: function(event) {
                     console.log("追加ボタンクリック");
+                    // 明細カレント行のクリア
+                    $scope.meisaiCurentId = "";                
+                    
                     w2ui['toolbar'].enable('showMeisaiForm');
                     w2ui['toolbar'].disable('showMitsumoriMeisaiForm');
                     $(".clsMitsumoriForm").hide();
                     $(".clsMitsumoriMeisaiForm").show();
                     MakeMeisaiForm(event, "", parent_id, parent_type);
     			},
+    			// ---------------------------------
+    			// ソートリクエスト
+    			// ---------------------------------
+                onSort: function(event) {
+                    console.log(event);
+                    // 明細カレント行のクリア
+                    $scope.meisaiCurentId = "";
+                    // 行移動ボタン操作
+                    if (event.field == 'seq') {
+                        w2ui['myMeisaiGrid'].toolbar.enable('UpBtn');
+                        w2ui['myMeisaiGrid'].toolbar.enable('DownBtn');
+                    } else {
+                        w2ui['myMeisaiGrid'].toolbar.disable('UpBtn');
+                        w2ui['myMeisaiGrid'].toolbar.disable('DownBtn');
+                    }
+                },
             });
 		}
 		// ---------------------------------
@@ -437,6 +528,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
                     { field: 'meisai_type', type: 'list', required: true, html: { caption: '種類', attr: 'style="" size="30"' },
                         options: { items: [{id:'M', text:'見出し'},{id:'S', text:'明細'}]}
                     },
+		            { field: 'seq', type: 'text', required: true, html: { caption: '順序', attr: 'disabled="disabled" style="" size="10"' }},
 		            { field: 'mei_kikaku', type: 'text', required: true, html: { caption: '規格', attr: 'style="" size="30"' }},
 		            { field: 'mei_tanka', type: 'text', required: true, html: { caption: '単価', attr: 'style="" size="30"' }},
 		            { field: 'mei_suuryo', type: 'text', required: true, html: { caption: '数量', attr: 'style="" size="30"' }},
@@ -485,77 +577,74 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
 		}
 		
     };
-	// ---------------------------------
-	// レポートデータ作成
-	// ---------------------------------
-	function MakeReportData() {
-	    var reportData = {};
+// 	// ---------------------------------
+// 	// レポートデータ作成
+// 	// ---------------------------------
+// 	function MakeReportData() {
+// 	    var reportData = {};
 
-	    reportData["template"] = "default.html";
-	    reportData["mitsumori_date"] = $scope.record.mitsumori_date;
-	    reportData["mitsumori_no"] = $scope.record.mitsumori_no;
-	    reportData["mitsumori_kingaku"] = '１２３，４５６，７８９円';
-	    reportData["title"] = $scope.record.title;
-	    reportData["name"] = $scope.record.name;
-	    reportData["mitsumori_kigen_date"] = $scope.record.mitsumori_kigen_date;
-	    reportData["kesai_jyouken"] = $scope.record.kesai_jyouken;
-	    reportData["nouki_date"] = $scope.record.nouki_date;
-	    reportData["nounyuu_basyo"] = $scope.record.nounyuu_basyo;
-	    reportData["tantousya_name"] = $scope.record.tantousya_name;
-	    reportData["mitsumori_meisai"] = $scope.record_meisai;
+// 	    reportData["template"] = "default.html";
+// 	    reportData["mitsumori_date"] = $scope.record.mitsumori_date;
+// 	    reportData["mitsumori_no"] = $scope.record.mitsumori_no;
+// 	    reportData["mitsumori_kingaku"] = '１２３，４５６，７８９円';
+// 	    reportData["title"] = $scope.record.title;
+// 	    reportData["name"] = $scope.record.name;
+// 	    reportData["mitsumori_kigen_date"] = $scope.record.mitsumori_kigen_date;
+// 	    reportData["kesai_jyouken"] = $scope.record.kesai_jyouken;
+// 	    reportData["nouki_date"] = $scope.record.nouki_date;
+// 	    reportData["nounyuu_basyo"] = $scope.record.nounyuu_basyo;
+// 	    reportData["tantousya_name"] = $scope.record.tantousya_name;
+// 	    reportData["mitsumori_meisai"] = $scope.record_meisai;
 
-        // 明細行の移送
-	    reportData["mitsumori_meisai"] = $scope.record_meisai;
-        // 明細行の編集
-        _.each(reportData.mitsumori_meisai, function(meisai) {
-            if (meisai.mei_tanka != undefined && meisai.mei_tanka != null){
-                var num = numeral().unformat(meisai.mei_tanka);
-                if (w2utils.isInt(num)) {
-                    meisai.mei_tanka = numeral(num).format('0,0');
-                }
-            }
-            if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null){
-                var num = numeral().unformat(meisai.mei_suuryo);
-                if (w2utils.isInt(meisai.mei_suuryo)) {
-                    meisai.mei_suuryo = numeral(num).format('0,0');
-                }
-            }
-            if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null){
-                var num = numeral().unformat(meisai.mei_kingaku);
-                if (w2utils.isInt(meisai.mei_kingaku)) {
-                    meisai.mei_kingaku = numeral(num).format('0,0');
-                }
-            }
-        });
-        // 空白明細行の追加
-        var linecnt = $scope.record_meisai.length;
-	    for (var idx = 15 ; idx > linecnt; idx--) {
-	        reportData["mitsumori_meisai"].push({mei_title:"　"});
-	    }
+//         // 明細行の移送
+// 	    reportData["mitsumori_meisai"] = $scope.record_meisai;
+//         // 明細行の編集
+//         _.each(reportData.mitsumori_meisai, function(meisai) {
+//             if (meisai.mei_tanka != undefined && meisai.mei_tanka != null){
+//                 var num = numeral().unformat(meisai.mei_tanka);
+//                 if (w2utils.isInt(num)) {
+//                     meisai.mei_tanka = numeral(num).format('0,0');
+//                 }
+//             }
+//             if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null){
+//                 var num = numeral().unformat(meisai.mei_suuryo);
+//                 if (w2utils.isInt(meisai.mei_suuryo)) {
+//                     meisai.mei_suuryo = numeral(num).format('0,0');
+//                 }
+//             }
+//             if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null){
+//                 var num = numeral().unformat(meisai.mei_kingaku);
+//                 if (w2utils.isInt(meisai.mei_kingaku)) {
+//                     meisai.mei_kingaku = numeral(num).format('0,0');
+//                 }
+//             }
+//         });
+//         // 空白明細行の追加
+//         var linecnt = $scope.record_meisai.length;
+// 	    for (var idx = 15 ; idx > linecnt; idx--) {
+// 	        reportData["mitsumori_meisai"].push({mei_title:"　"});
+// 	    }
 
-        // 合計行の作成
-        var goukei_suu = 0;
-        var goukei_kin = 0;
-        _.each($scope.record_meisai, function(meisai) {
-            if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null){
-                var num = numeral().unformat(meisai.mei_suuryo);
-                if (_.isNumber(num)) {
-                    goukei_suu = goukei_suu + Number(num);
-                }
-            }
-            if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null){
-                var num = numeral().unformat(meisai.mei_kingaku);
-                if (_.isNumber(num)) {
-                    goukei_kin = goukei_kin + Number(num);
-                }
-            }
-        });
-	    reportData["goukei_suuryo"] = numeral(goukei_suu).format('0,0');
-	    reportData["goukei_kingaku"] = numeral(goukei_kin).format('0,0');
-        
-
-
-	    return reportData;
-	}
+//         // 合計行の作成
+//         var goukei_suu = 0;
+//         var goukei_kin = 0;
+//         _.each($scope.record_meisai, function(meisai) {
+//             if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null){
+//                 var num = numeral().unformat(meisai.mei_suuryo);
+//                 if (_.isNumber(num)) {
+//                     goukei_suu = goukei_suu + Number(num);
+//                 }
+//             }
+//             if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null){
+//                 var num = numeral().unformat(meisai.mei_kingaku);
+//                 if (_.isNumber(num)) {
+//                     goukei_kin = goukei_kin + Number(num);
+//                 }
+//             }
+//         });
+// 	    reportData["goukei_suuryo"] = numeral(goukei_suu).format('0,0');
+// 	    reportData["goukei_kingaku"] = numeral(goukei_kin).format('0,0');
+// 	    return reportData;
+// 	}
 
 }]);

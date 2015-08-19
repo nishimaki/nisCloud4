@@ -179,3 +179,32 @@
             w2ui[gridName].reload();
         }
     }
+
+    // ---------------------------------
+    // 見積明細更新用データの編集
+    // ---------------------------------
+    function makeMitsumriMeisaiPostData(mitumori_rec, mitumorimeisai_rec) {
+        console.log("mitumorimeisai_rec");
+        console.dir(mitumorimeisai_rec);
+        
+        var postData = {
+            cmd: 'save-record',
+            recid: mitumorimeisai_rec.recid,
+            seq: mitumorimeisai_rec.seq,
+            parent_id: mitumori_rec.recid,
+            parent_type: mitumori_rec.parent_type,
+            record:  {
+                mei_title: mitumorimeisai_rec.mei_title,
+                meisai_type: {
+                    id: mitumorimeisai_rec.meisai_type,
+                },
+                mei_kikaku: mitumorimeisai_rec.mei_kikaku,
+                mei_tanka: mitumorimeisai_rec.mei_tanka,
+                mei_suuryo: mitumorimeisai_rec.mei_suuryo,
+                mei_tani: mitumorimeisai_rec.mei_tani,
+                mei_kingaku:  mitumorimeisai_rec.mei_kingaku,
+                mei_bikou: mitumorimeisai_rec.mei_bikou,
+            }
+        };
+        return postData;
+    }

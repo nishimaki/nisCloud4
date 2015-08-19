@@ -1,176 +1,120 @@
 ---
 {
-    "template": "report2.html",
+    "template": "report1.html",
     "mitsumori_date": "2015/03/04",
-    "mitsumori_no": "BAA551-8756",
-    "mitsumori_kingaku": "６７，９３０，３９４円",
+    "mitsumori_no": null,
+    "mitsumori_kingaku": "５，７５０円",
     "title": "見積タイトル００３",
     "name": "白木武揚",
-    "mitsumori_kigen_date": "2015/08/24",
-    "kesai_jyouken": "現金一括",
-    "nouki_date": "2015/07/31",
-    "nounyuu_basyo": "御社していの場所",
-    "tantousya_name": "にしまき",
+    "mitsumori_kigen_date": null,
+    "kesai_jyouken": null,
+    "nouki_date": null,
+    "nounyuu_basyo": null,
+    "tantousya_name": null,
     "mitsumori_meisai": [
+        {
+            "recid": "MEI002",
+            "mitsumei_id": "MEI002",
+            "meisai_type": {
+                "id": "S",
+                "text": "明細"
+            },
+            "seq": "1",
+            "template_id": "TMP0002",
+            "parent_id": "MITSU0001",
+            "parent_type": null,
+            "mei_title": "作業００２",
+            "mei_kikaku": "１１１",
+            "mei_tanka": "10",
+            "mei_suuryo": "1",
+            "mei_tani": "子",
+            "mei_kingaku": "10",
+            "mei_bikou": "明細２"
+        },
         {
             "recid": "MEI003",
             "mitsumei_id": "MEI003",
-            "meisai_type": "S",
+            "meisai_type": {
+                "id": "S",
+                "text": "明細"
+            },
             "seq": "3",
             "template_id": "TMP0003",
             "parent_id": "MITSU0001",
             "parent_type": "M",
             "mei_title": "作業００３",
-            "mei_kikaku": null,
-            "mei_tanka": null,
-            "mei_suuryo": null,
-            "mei_tani": null,
-            "mei_kingaku": null,
+            "mei_kikaku": "８８",
+            "mei_tanka": "100",
+            "mei_suuryo": "2",
+            "mei_tani": "a",
+            "mei_kingaku": "200",
             "mei_bikou": "明細３"
         },
         {
             "recid": "MEI001",
             "mitsumei_id": "MEI001",
-            "meisai_type": "S",
-            "seq": "1",
+            "meisai_type": {
+                "id": "S",
+                "text": "明細"
+            },
+            "seq": "2",
             "template_id": "TMP0001",
             "parent_id": "MITSU0001",
-            "parent_type": "M",
+            "parent_type": null,
             "mei_title": "作業００１",
-            "mei_kikaku": "きかく",
-            "mei_tanka": "10,000",
-            "mei_suuryo": "5,000",
-            "mei_tani": "個",
-            "mei_kingaku": "50,000,000",
+            "mei_kikaku": "ooo",
+            "mei_tanka": "100",
+            "mei_suuryo": "30",
+            "mei_tani": "b",
+            "mei_kingaku": "3,000",
             "mei_bikou": "明細１"
         },
         {
-            "recid": "MEI002",
-            "mitsumei_id": "MEI002",
+            "recid": "7427f870-458d-11e5-bc3a-0794c996e7fd",
+            "mitsumei_id": "7427f870-458d-11e5-bc3a-0794c996e7fd",
             "meisai_type": "S",
-            "seq": "2",
-            "template_id": "TMP0002",
-            "parent_id": "MITSU0001",
-            "parent_type": "M",
-            "mei_title": "作業００２",
-            "mei_kikaku": "kikaku",
-            "mei_tanka": "12,345",
-            "mei_suuryo": "11",
-            "mei_tani": "ml",
-            "mei_kingaku": "135,795",
-            "mei_bikou": "明細２"
-        },
-        {
-            "recid": "f4826a90-3a3a-11e5-9f2a-51aa945927ef",
-            "mitsumei_id": "f4826a90-3a3a-11e5-9f2a-51aa945927ef",
-            "meisai_type": "M",
-            "seq": null,
-            "template_id": null,
-            "parent_id": "MITSU0001",
-            "parent_type": "M",
-            "mei_title": "1111",
-            "mei_kikaku": "2222",
-            "mei_tanka": "33,333",
-            "mei_suuryo": "44,444",
-            "mei_tani": "個",
-            "mei_kingaku": "5,555",
-            "mei_bikou": "備考"
-        },
-        {
-            "recid": "9ee83e30-3b24-11e5-9996-adbe2d1f4b5f",
-            "mitsumei_id": "9ee83e30-3b24-11e5-9996-adbe2d1f4b5f",
-            "meisai_type": "M",
-            "seq": null,
-            "template_id": null,
-            "parent_id": "MITSU0001",
-            "parent_type": "M",
-            "mei_title": "111111111",
-            "mei_kikaku": "2222222222",
-            "mei_tanka": "4",
-            "mei_suuryo": "4,444,444",
-            "mei_tani": "5555555",
-            "mei_kingaku": "17,777,776",
-            "mei_bikou": "7777777777"
-        },
-        {
-            "recid": "1f139070-3b4b-11e5-99d7-d7b8f3f0d490",
-            "mitsumei_id": "1f139070-3b4b-11e5-99d7-d7b8f3f0d490",
-            "meisai_type": "M",
-            "seq": null,
+            "seq": "4",
             "template_id": null,
             "parent_id": "MITSU0001",
             "parent_type": "T",
-            "mei_title": "TEST",
-            "mei_kikaku": "きかく",
-            "mei_tanka": "123",
-            "mei_suuryo": "45",
+            "mei_title": "からだよろこぶバター",
+            "mei_kikaku": "900g",
+            "mei_tanka": "1,120",
+            "mei_suuryo": "1",
             "mei_tani": "単",
-            "mei_kingaku": "678",
-            "mei_bikou": "びこうびこう"
+            "mei_kingaku": "1,120",
+            "mei_bikou": "株式会社 落合乳業"
         },
         {
-            "recid": "0f6f6b40-3b54-11e5-99d7-d7b8f3f0d490",
-            "mitsumei_id": "0f6f6b40-3b54-11e5-99d7-d7b8f3f0d490",
+            "recid": "89e0de00-4594-11e5-bc3a-0794c996e7fd",
+            "mitsumei_id": "89e0de00-4594-11e5-bc3a-0794c996e7fd",
             "meisai_type": "S",
-            "seq": null,
-            "template_id": null,
-            "parent_id": "MITSU0001",
-            "parent_type": "M",
-            "mei_title": "みんなのチーズ",
-            "mei_kikaku": "550g",
-            "mei_tanka": "0",
-            "mei_suuryo": "6",
-            "mei_tani": "単",
-            "mei_kingaku": "0",
-            "mei_bikou": " 株式会社 クイニーアマン産業"
-        },
-        {
-            "recid": "def32300-3b65-11e5-99d7-d7b8f3f0d490",
-            "mitsumei_id": "def32300-3b65-11e5-99d7-d7b8f3f0d490",
-            "meisai_type": "S",
-            "seq": null,
-            "template_id": null,
-            "parent_id": "MITSU0001",
-            "parent_type": "M",
-            "mei_title": "オリジナルマーガリン",
-            "mei_kikaku": "1000g",
-            "mei_tanka": "560",
-            "mei_suuryo": "4",
-            "mei_tani": "単",
-            "mei_kingaku": "2,240",
-            "mei_bikou": "ミカミフード 株式会社"
-        },
-        {
-            "recid": "f2d46690-3b65-11e5-99d7-d7b8f3f0d490",
-            "mitsumei_id": "f2d46690-3b65-11e5-99d7-d7b8f3f0d490",
-            "meisai_type": "S",
-            "seq": null,
-            "template_id": null,
-            "parent_id": "MITSU0001",
-            "parent_type": "M",
-            "mei_title": "極上ガーリック",
-            "mei_kikaku": "800g",
-            "mei_tanka": "1,670",
-            "mei_suuryo": "5",
-            "mei_tani": "単",
-            "mei_kingaku": "8,350",
-            "mei_bikou": " 株式会社 ライン乳業"
-        },
-        {
-            "recid": "27850480-3b66-11e5-99d7-d7b8f3f0d490",
-            "mitsumei_id": "27850480-3b66-11e5-99d7-d7b8f3f0d490",
-            "meisai_type": "S",
-            "seq": null,
+            "seq": "5",
             "template_id": null,
             "parent_id": "MITSU0001",
             "parent_type": "T",
-            "mei_title": "プレミアムコーヒー牛乳",
-            "mei_kikaku": "500ml",
-            "mei_tanka": "650",
-            "mei_suuryo": "0",
+            "mei_title": "最高級オリーブオイル",
+            "mei_kikaku": "650ml",
+            "mei_tanka": "1,420",
+            "mei_suuryo": "1",
             "mei_tani": "単",
-            "mei_kingaku": "0",
-            "mei_bikou": "株式会社 ヴァイツェンブロート乳業"
+            "mei_kingaku": "1,420",
+            "mei_bikou": "池田食品工業 株式会社"
+        },
+        {
+            "mei_title": "　"
+        },
+        {
+            "mei_title": "　"
+        },
+        {
+            "mei_title": "　"
+        },
+        {
+            "mei_title": "　"
+        },
+        {
+            "mei_title": "　"
         },
         {
             "mei_title": "　"
@@ -188,7 +132,7 @@
             "mei_title": "　"
         }
     ],
-    "goukei_suuryo": "4,493,959",
-    "goukei_kingaku": "67,930,394"
+    "goukei_suuryo": "35",
+    "goukei_kingaku": "5,750"
 }
 ---
