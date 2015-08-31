@@ -155,29 +155,29 @@ function MakeReportData() {
     reportData["nouki_date"] = mitumori_rec.nouki_date;
     reportData["nounyuu_basyo"] = mitumori_rec.nounyuu_basyo;
     reportData["tantousya_name"] = mitumori_rec.tantousya_name;
-    reportData["mitsumori_meisai"] = mitumori_rec;
 
     // 明細行の移送
     reportData["mitsumori_meisai"] = mitumorimeisai_rec;
+    console.dir(reportData.mitsumori_meisai);
 
     // 明細行の編集
     _.each(reportData.mitsumori_meisai, function(meisai) {
         // 単価
-        if (meisai.mei_tanka != undefined && meisai.mei_tanka != null) {
+        if (meisai.mei_tanka != undefined && meisai.mei_tanka != null && meisai.mei_tanka != "") {
             var num = numeral().unformat(meisai.mei_tanka);
             if (w2utils.isInt(num)) {
                 meisai.mei_tanka = numeral(num).format('0,0');
             }
         }
         // 数量
-        if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null) {
+        if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null && meisai.mei_suuryo != "") {
             var num = numeral().unformat(meisai.mei_suuryo);
             if (w2utils.isInt(meisai.mei_suuryo)) {
                 meisai.mei_suuryo = numeral(num).format('0,0');
             }
         }
         // 金額
-        if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null) {
+        if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null && meisai.mei_kingaku != "") {
             var num = numeral().unformat(meisai.mei_kingaku);
             if (w2utils.isInt(meisai.mei_kingaku)) {
                 meisai.mei_kingaku = numeral(num).format('0,0');
@@ -196,13 +196,13 @@ function MakeReportData() {
     var goukei_suu = 0;
     var goukei_kin = 0;
     _.each(mitumorimeisai_rec, function(meisai) {
-        if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null) {
+        if (meisai.mei_suuryo != undefined && meisai.mei_suuryo != null && meisai.mei_suuryo != "") {
             var num = numeral().unformat(meisai.mei_suuryo);
             if (_.isNumber(num)) {
                 goukei_suu = goukei_suu + Number(num);
             }
         }
-        if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null) {
+        if (meisai.mei_kingaku != undefined && meisai.mei_kingaku != null && meisai.mei_kingaku != "") {
             var num = numeral().unformat(meisai.mei_kingaku);
             if (_.isNumber(num)) {
                 goukei_kin = goukei_kin + Number(num);
