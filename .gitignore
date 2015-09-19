@@ -1,4 +1,6 @@
-node_modules/
+node_modules/*
+!ncmb-latest.min.js
+
 bower_components/
 npm-debug.log
 backup/

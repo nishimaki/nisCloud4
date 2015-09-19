@@ -1,8 +1,8 @@
 'use strict';
 // ---------------------------------
-// コントローラー BizMitSumoriCtrl
+// コントローラー BizMitsumoriCtrl
 // ---------------------------------
-app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$window', '$state', 'SharedService', function($rootScope, $scope, $http, $sce, $window, $state, SharedService) {
+app.controller('BizMitsumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$window', '$state', 'SharedService', function($rootScope, $scope, $http, $sce, $window, $state, SharedService) {
 
     $scope.MessageList = [];
     $scope.content = {};
@@ -84,7 +84,7 @@ app.controller('BizMitSumoriCtrl', ['$rootScope', '$scope', '$http', '$sce', '$w
     });
 
     $scope.init = function init() {
-        console.log("BizMitSumoriCtrl init");
+        console.log("BizMitsumoriCtrl init");
         // View制御
         MitsumoriViewControl('1');
 
